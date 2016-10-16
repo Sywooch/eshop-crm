@@ -37,7 +37,7 @@ return [
 		],
 		'sms' => [
 			'class' => 'Zelenin\yii\extensions\Sms',
-			'api_id' => '470c1f43-9745-b1f4-75be-8ceaaf51594e'
+			'api_id' => ''
 		],
 	],
 	'params' => $params,
