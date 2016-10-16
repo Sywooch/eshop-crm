@@ -9,6 +9,7 @@ use app\models\OrderSearch;
 use app\models\TovarBalance;
 use app\models\TovarSearch;
 use app\models\Sms;
+use app\models\Call;
 //use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -213,8 +214,10 @@ class OrdersController extends \app\components\BaseController
         //$prvTovar->pagination->pageSize = 10;
         //\yii\helpers\VarDumper::dump($prvTovar,true,10);die;
         
-        $call = $model->getCall();
+        //$call = Call::getCall();
         //\yii\helpers\VarDumper::dump($call,true,10);
+        $ocall = new Call();
+        $call = $ocall->getCall($model->client->phone);
         	
         return $this->render('update', [
             'model' => $model,
@@ -285,10 +288,13 @@ class OrdersController extends \app\components\BaseController
         //$mdlTovar = new TovarSearch();
         //$prvTovar = $mdlTovar->search(Yii::$app->request->queryParams);
         //$prvTovar->pagination->pageSize = 10;
-        //\yii\helpers\VarDumper::dump($prvTovar,true,10);die;
+        //\yii\helpers\VarDumper::dump($model->client->phone,10,true);die;
+        $ocall = new Call();
+        $call = $ocall->getCall($model->client->phone);
         	
         return $this->render('update1', [
             'model' => $model,
+            'call' => $call,
             //'mdlTovar' => $mdlTovar,
             //'prvTovar' => $prvTovar,
         ]);        
@@ -346,7 +352,7 @@ class OrdersController extends \app\components\BaseController
  
 		$objReader = \PHPExcel_IOFactory::createReader('Excel5');
 				
-		$objPHPExcel = $objReader->load(Yii::$app->basePath."/../lib/template/116-dinikiev.xls");
+		$objPHPExcel = $objReader->load(Yii::$app->basePath."/../lib/template/s".$this->shop_id."/f116.xls");
 				
 		//if($region == 'rus') $objPHPExcel = $objReader->load("templates/116-dinikiev.xls");
 	  	//elseif($region == 'msk') $objPHPExcel = $objReader->load("templates/116-dinikiev-fiz.xls");
@@ -459,7 +465,7 @@ class OrdersController extends \app\components\BaseController
  
 		$objReader = \PHPExcel_IOFactory::createReader('Excel5');
 				
-		$objPHPExcel = $objReader->load(Yii::$app->basePath."/../lib/template/f112-dinikiev.xls");
+		$objPHPExcel = $objReader->load(Yii::$app->basePath."/../lib/template/s".$this->shop_id."/f112.xls");
 				
 		// делаем первую страницу активной
 		$page = $objPHPExcel->setActiveSheetIndex(0);
@@ -521,7 +527,7 @@ class OrdersController extends \app\components\BaseController
 		
 		$objReader = \PHPExcel_IOFactory::createReader('Excel5');
 		
-		$objPHPExcel = $objReader->load(Yii::$app->basePath."/../lib/template/F7P-dinikiev.xls");		
+		$objPHPExcel = $objReader->load(Yii::$app->basePath."/../lib/template/s".$this->shop_id."/f7p.xls");		
 				
 		$itog = \app\components\Tools::num2str($mdl->tovarsumma);
 		// делаем первую страницу активной
@@ -575,7 +581,7 @@ class OrdersController extends \app\components\BaseController
 		
 		$objReader = \PHPExcel_IOFactory::createReader('Excel5');
 		
-		$objPHPExcel = $objReader->load(Yii::$app->basePath."/../lib/template/postsms-dinikiev.xls");		
+		$objPHPExcel = $objReader->load(Yii::$app->basePath."/../lib/template/s".$this->shop_id."/postsms.xls");		
 				
 		$itog = \app\components\Tools::num2str($mdl->tovarsumma);
 		// делаем первую страницу активной
