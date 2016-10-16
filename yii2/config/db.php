@@ -2,9 +2,9 @@
 
 return [
     'class' => 'yii\db\Connection',
-    'dsn' => 'mysql:host=localhost;dbname=a0016527_erp',
-    'username' => 'a0016527_erp',
-    'password' => 'erperdfcv12',
+    'dsn' => 'mysql:host=localhost;dbname=db_erp',
+    'username' => 'db_erp',
+    'password' => 'psswd123',
     'charset' => 'utf8',
     /*'on afterOpen' => function($event) {
      	$event->sender->createCommand("SET time_zone = '+5:00'")->execute();
