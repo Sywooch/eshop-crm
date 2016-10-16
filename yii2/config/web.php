@@ -3,8 +3,8 @@
 $params = require(__DIR__ . '/params.php');
 
 $config = [
-	'id' => 'crm',
-	'name' => 'CRM',
+	'id' => 'esshop-crm',
+	'name' => 'ESHOP-CRM',
 	'basePath' => dirname(__DIR__),
 	'bootstrap' => ['log','admin'],
 	'language' => 'ru-RU',
@@ -81,7 +81,7 @@ $config = [
 		],
 		'sms' => [
 			'class' => 'Zelenin\yii\extensions\Sms',
-			//'api_id' => '470c1f43-9745-b1f4-75be-8ceaaf51594e'
+			'api_id' => ''
 		],
 	],
 	'params' => $params,
@@ -106,45 +106,9 @@ $config = [
 		'allowActions' => [
 			'site/index',
 			'site/error',
-			//'user/default',
-			'user/default/login',
-			'user/default/logout',
-			'exchange/*'
-			//'admin/*',
-		],
-		/*'rules' =>[
-		   	'permit/access'=>
-		   	[
-		   		[
-		   			'allow' => true,
-		   			'roles' => ['root'],
-		   		]
-		   	],
-		   	'permit/user'=>
-		   	[
-		   		[
-		   			'allow' => true,
-		   			'roles' => ['root'],
-		   		]
-		   	],
-		   	'site' => [
-		   		[
-		   			'actions' => ['index', 'error'],
-		   			'allow' => true,
-		   		],
-		   	],
-		   	'user/default' => [
-		   		[
-		   			'actions' => ['login','request-password-reset', 'reset-password'],
-		   			'allow' => true
-		   		],
-		   		[
-		   			'actions' => ['logout'],
-		   			'allow' => true,
-		   			'roles' => ['@']
-		   		]
-		   	]
-	   ]*/
+			'user/default/*',
+			'exchange/*'			
+		],		
 	]
 ];
 
@@ -154,13 +118,13 @@ if(YII_ENV_DEV)
 	$config['bootstrap'][] = 'debug';
 	$config['modules']['debug'] = [
 		'class' => 'yii\debug\Module',
-		//'allowedIPs' => ['127.0.0.1', '::1', '192.168.0.*', '94.41.61.180']
+		//'allowedIPs' => ['127.0.0.1', '::1', '192.168.0.*']
 	];
 
 	$config['bootstrap'][] = 'gii';
 	$config['modules']['gii'] = [
 		'class' => 'yii\gii\Module',
-		//'allowedIPs' => ['127.0.0.1', '::1', '192.168.0.*', '94.41.61.180']
+		//'allowedIPs' => ['127.0.0.1', '::1', '192.168.0.*']
 	];
 }
 
