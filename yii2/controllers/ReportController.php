@@ -55,7 +55,10 @@ class ReportController extends BaseController
 			$date = date('Y-m-d', strtotime($date1.' - 1 days'));			
 
 			$ya_list = $this->_get_metrika();			
-			
+			if(array_key_exists('errors', $ya_list)) {				
+				return $this->render('hosts',['model'=>$model, 'results'=>$results, 'errors'=>$ya_list['errors']]);
+				die;
+			}
 			$db = Yii::$app->db;
 			
 			while($date < $date2){
