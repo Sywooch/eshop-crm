@@ -54,12 +54,14 @@ class Call extends Model
 			return $this->requestApi($url);
 		}
 		else {
-			$phone = substr_replace($phone, '7', 0, 1);			
-			$url = 'http://api.comagic.ru/api/v1/call/?session_key='.$this->getKey().'&date_from='.$this->getDateFrom().'&date_till='.$this->getDateTill().'&numa='.$phone;
-			$ar1 = $this->requestApi($url);
+			$ar1 = $ar2 = array();
+			$phone = substr_replace($phone, '7', 0, 1);
+			
+			$url = 'http://api.comagic.ru/api/v1/call/?session_key='.$this->getKey().'&date_from='.$this->getDateFrom().'&date_till='.$this->getDateTill().'&numa='.$phone;			
+			if($req = $this->requestApi($url)) $ar1 = $req;
+			
 			$url = 'http://api.comagic.ru/api/v1/call/?session_key='.$this->getKey().'&date_from='.$this->getDateFrom().'&date_till='.$this->getDateTill().'&numb='.$phone;
-			$ar2 = $this->requestApi($url);
-			//if
+			if($req = $this->requestApi($url)) $ar2 = $req;
 			//\yii\helpers\VarDumper::dump($ar1,10,true);die;
 			return array_merge($ar1,$ar2);
 		}		

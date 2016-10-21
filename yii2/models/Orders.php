@@ -363,7 +363,33 @@ class Orders extends \yii\db\ActiveRecord
 */
 	public function saveTovar() {
 		$return = '';
+		$oldarray = $old = $newarray = $new = array();
 		//\yii\helpers\VarDumper::dump($_REQUEST,5,true);die;
+		$oldarray = TovarRashod::find()->where(['order_id'=>$this->id])->indexBy('id')->asArray()->all();
+		if (isset($_POST['tovar_list'])) 
+			$newarray = $_POST['tovar_list'];
+		//$newarray = array_merge($oldpost, $newarray);
+		//приведем массивы к единому виду
+		foreach($oldarray as $item){
+			if(array_key_exists($item['tovar_id'].'_'.$item['sklad_id'], $old)) {
+				$old[$item['tovar_id'].'_'.$item['sklad_id']]['amount'] = $old[$item['tovar_id'].'_'.$item['sklad_id']]['amount'] + $item['amount'];
+			}
+			else {
+				$old[$item['tovar_id'].'_'.$item['sklad_id']] = $item;
+			}
+		}
+		foreach($newarray as $item){
+			if(array_key_exists($item['tovar_id'].'_'.$item['sklad_id'], $new)) {
+				$new[$item['tovar_id'].'_'.$item['sklad_id']]['amount'] = $new[$item['tovar_id'].'_'.$item['sklad_id']]['amount'] + $item['amount'];
+			}
+			else {
+				$new[$item['tovar_id'].'_'.$item['sklad_id']] = $item;
+			}
+		}
+		\yii\helpers\VarDumper::dump($old,5,true);
+		\yii\helpers\VarDumper::dump($new,5,true);die;
+		
+			
 		if (isset($_POST['tovar_list']) and count($_POST['tovar_list']) > 0){// and ($this->status == '6' or $this->status == '1' or $this->status == '4')) {
 			//если в заказе уже были позиции прайса
 			if (array_key_exists('old',$_POST['tovar_list'])) {

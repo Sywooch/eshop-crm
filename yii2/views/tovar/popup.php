@@ -33,17 +33,25 @@ $this->params['breadcrumbs'][] = $this->title;
             	'buttons' => ['add_to_order' => function ($url, $model) {return '<button type="button" class="add_to_order" title="Добавить в заявку"><span class="glyphicon glyphicon-ok"></span></button>';}],
             	'template' => '{add_to_order}',
             ],
-            ['attribute'=>'t_art','label'=>$searchModel->getAttributeLabel('t_art')],
+            [
+            	'attribute'=>'t_art',
+            	'label'=>$searchModel->getAttributeLabel('t_art'),
+            ],           	
             [
             	'attribute'=>'t_name',
             	'format'=>'raw',
             	'label'=>$searchModel->getAttributeLabel('t_name'),
             	'value'=> function($model, $key, $index, $column) {
-            		$st = $model['t_name']."<input type='hidden' class='t_id' value='".$model['t_id']."' />";
+            		$st = $model['t_name']."<input type='hidden' class='tovar_id' value='".$model['t_id']."' />";
             		return $st;
             	},
+            	'contentOptions' => ['class' => 'name'],
             ],            
-            ['attribute'=>'t_price','label'=>$searchModel->getAttributeLabel('t_price')],
+            [
+            	'attribute'=>'t_price',
+            	'label'=>$searchModel->getAttributeLabel('t_price'),
+            	'contentOptions' => ['class' => 'price'],
+            ],
             [
             	'attribute'=>'cat_name',
             	'label'=>$searchModel->getAttributeLabel('cat_name'),
@@ -52,9 +60,9 @@ $this->params['breadcrumbs'][] = $this->title;
 	                'cat_id',
 	                $category,
 	                ['class' => 'form-control', 'prompt' => '']//'value' => 'OrderSearch[status][]'
-	            ),
+	            ),	            
         	],
-        	['attribute'=>'ostatok','label'=>$searchModel->getAttributeLabel('ostatok')],        	
+        	//['attribute'=>'ostatok','label'=>$searchModel->getAttributeLabel('ostatok')],        	
         	[
             	'attribute'=>'s_name',
             	'label'=>$searchModel->getAttributeLabel('s_name'),
@@ -69,9 +77,9 @@ $this->params['breadcrumbs'][] = $this->title;
 	                $sklad,
 	                ['class' => 'form-control', 'prompt' => '']//'value' => 'OrderSearch[status][]'
 	            ),
-        	],
-            
-        ],
+	            'contentOptions' => ['class' => 'sklad_name'],
+        	],            
+        ],        
     ]); ?>
 
 	<? //Pjax::end(); ?>

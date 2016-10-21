@@ -596,13 +596,14 @@ if (count($rashod_list) > 0) {
 	$n=0;
 	$total_sum = $total_qnt = 0;
 	foreach ($rashod_list as $rashod) {
+		$input_id = time();
 ?>
 		<tr class="tovar-row">
 			<td class="num"><?= ++$n ?></td>
-			<td class="name"><?= $rashod->tovar->name ?><?= Html::hiddenInput("tovar_list[old][{$rashod->id}][id]", $rashod->id);?></td>
-			<td class="sklad_id"><?= $rashod->sklad->name ?><?= Html::hiddenInput("tovar_list[old][{$rashod->id}][sklad_id]", $rashod->sklad->id);?></td>
+			<td class="name"><?= $rashod->tovar->name ?><?= Html::hiddenInput("tovar_list[{$input_id}][rashod_id]", $rashod->id);?><?= Html::hiddenInput("tovar_list[{$input_id}][tovar_id]", $rashod->tovar->id, ['class'=>'tovar_id']);?></td>
+			<td class="sklad_id"><?= $rashod->sklad->name ?><?= Html::hiddenInput("tovar_list[{$input_id}][sklad_id]", $rashod->sklad->id);?></td>
 			<td class="price"><?= $rashod->price ?></td>
-			<td class="amount"><?= Html::input('text',"tovar_list[old][{$rashod->id}][amount]",$rashod->amount,["class"=>"form-control amount"]); $total_qnt = $total_qnt + $rashod->amount; ?></td>
+			<td class="amount"><?= Html::input('text',"tovar_list[{$input_id}][amount]",$rashod->amount,["class"=>"form-control amount"]); $total_qnt = $total_qnt + $rashod->amount; ?></td>
 			<td class="sum"><?= $rashod->price * $rashod->amount; $total_sum = $total_sum + ($rashod->price * $rashod->amount) ?></td>
 			<td><button type="button" class="btn btn-default btn-sm" aria-label="Удалить"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button></td>
 		</tr>
