@@ -15,12 +15,12 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\ContentNegotiator;
 use yii\web\Response;
-//use app\components\BaseController;
+use app\components\LiveInform;
 
 /**
  * OrdersController implements the CRUD actions for Orders model.
  */
-class OrdersController extends \app\components\BaseController
+class AtestController extends \yii\web\Controller//\app\components\BaseController
 {
     public function behaviors()
     {
@@ -40,15 +40,28 @@ class OrdersController extends \app\components\BaseController
 		];
         
     }
-
+	public function actionIndex()
+    {//echo '<pre>';print_r(Yii::$app->params);echo '</pre>';   	    	
+        
+        $li = new LiveInform();
+        $li->phone = '89059486598';
+		$li->order_id = '34402';
+		$li->tracking = '45261603057607';
+    	$msg = $li->add();
+    	if(array_key_exists('success')) Yii::$app->session->addFlash('success', $msg['success']);
+		    	else Yii::$app->session->addFlash('error', $msg['error']);
+        echo '<pre>';print_r($li->add());echo '</pre>'; 
+    }
     /**
      * Lists all Orders models.
      * @return mixed
      */
-    public function actionIndex()
-    { 	    	
+    public function actionIndex1()
+    {//echo '<pre>';print_r(Yii::$app->params);echo '</pre>';   	    	
+        
+        $li = new LiveInform();
         $searchModel = new OrderSearch();
-		
+        
         $searchModel->generateColumn();
         
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);

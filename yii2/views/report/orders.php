@@ -23,6 +23,8 @@ $this->title = 'Анализ по заявкам';
     	'options'=>['class'=>'form-control']
 	]) ?>
     <?= $form->field($model, 'rowTotal')->checkbox() ?>
+    
+    <?= $form->field($model, 'cat_id')->dropDownList($categories, ['prompt'=>'']) ?>
 
     <button type="submit" class="btn btn-primary">Отобрать</button>
 

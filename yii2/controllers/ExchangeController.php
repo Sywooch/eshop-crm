@@ -2,7 +2,7 @@
 
 namespace app\controllers;
 
-use yii\filters\AccessControl;
+//use yii\filters\AccessControl;
 use app\components\Tools;
 use app\models\Orders;
 use app\models\Tovar;
@@ -59,10 +59,10 @@ class ExchangeController extends \yii\web\Controller
 			{
 				$ut = $return = $tovar = [];
 				$return['url'] = '_jivosite_';
-				$return['message'] = null;
+				//$return['note'] = null;
 				$return['source'] = 3;//источник - живосайт
 				
-				if(!empty($json['message'])) $return['message'] = $json['message']; else $return['message'] = null;
+				if(!empty($json['message'])) $return['note'] = $json['message']; else $return['note'] = null;
 				if(!empty($json['visitor']['name'])) $return['name'] = $json['visitor']['name']; else $return['name'] = null;
 				if(!empty($json['visitor']['email'])) $return['email'] = $json['visitor']['email']; else $return['email'] = null;
 				if(!empty($json['visitor']['phone'])) $return['phone'] = $json['visitor']['phone'];	else $return['phone'] = null;
@@ -107,9 +107,9 @@ class ExchangeController extends \yii\web\Controller
 				
 				$this->savetodb($return);
 				
-				$fp = fopen('000Jivojson-'.date('Y-m-d-H').'.txt', 'a');
+				/*$fp = fopen('000Jivojson-'.date('Y-m-d-H').'.txt', 'a');
 				fwrite($fp, print_r($json,true));
-				fclose($fp);
+				fclose($fp);*/
 			}	
 			
 		}
@@ -177,6 +177,44 @@ class ExchangeController extends \yii\web\Controller
         return $this->savetodb($row);
 	}
 	
+	public function actionFromliveinform() {
+		if(empty($_POST['data'])) die;
+		
+		$fp = fopen('0live-'.date('Y-m-d').'.txt', 'a');
+		fwrite($fp, print_r($_POST,true));
+		fclose($fp);
+		
+		$data = json_decode($_POST['data']);
+		//вручен или возврат
+		if($data['track_status'] == '2' or $data['track_status'] == '3') {
+			$order = Orders::find()->where(['identif'=>$data['tracking'], 'id'=>$data['account_order_id']])->one();
+			if(!is_null($order)) {
+				if($data['track_status'] == '2') {
+					$order->dostavlen = 1;
+					$order->data_dostav = date('Y-m-d');
+				}
+				if($data['track_status'] == '3') {
+					$order->vozvrat = 1;
+					$order->data_vozvrat = date('Y-m-d');
+				}
+				if($order->save()) {
+					header("HTTP/1.1 200 OK");die;
+				}
+				else {
+					$fp = fopen('0live-err'.date('Y-m-d').'.txt', 'a');
+					fwrite($fp, print_r($order->firstErrors, true));
+					fclose($fp);
+				}
+			}
+			
+		}
+	}
+	/**
+	* 
+	* @param array $row
+	* 
+	* @return
+	*/
 	public function savetodb($row)
 	{
 		$logs = $order = $client = $utm = $utms = $tovar = [];
@@ -231,7 +269,8 @@ class ExchangeController extends \yii\web\Controller
 			Tools::processData($row['ip_address'],$order,'ip_address');
 			Tools::processData($shop_id,$order,'shop_id');
 			Tools::processData($row['source'],$order,'source');
-			//Tools::processData($row->prich2,$order,'note');
+			Tools::processData($row['note'],$order,'note');
+			//Tools::processData($row['message'],$order,'note');
 			//if(count($order) >0 and null === (Orders::find()->where(['old_id' => $row->id, 'shop_id' => $shop_id])->one())) {
 				if(!array_key_exists('source', $order)) $order['source'] = 1;//источник - форма на сайте
 				$order['status'] = '1';//cтатус - новый

@@ -9,7 +9,7 @@ use app\models\Senders;
 use app\modules\user\models\User;
 use yii\behaviors\TimestampBehavior;
 use yii\behaviors\BlameableBehavior;
-
+use app\components\LiveInform;
 /**
  * This is the model class for table "order".
  *
@@ -327,7 +327,7 @@ class Orders extends \yii\db\ActiveRecord
 			]*/
 		);
 		//запретить менеджерам дубли и прочее
-		if (isset(Yii::$app->user) and Yii::$app->user->can('manager'))
+		if (isset(Yii::$app->user) and (Yii::$app->user->can('manager')) and !Yii::$app->user->can('orderDouble'))
 		{
 			$status_disable = [
 			    '2' => ['disabled' => true],
@@ -397,24 +397,7 @@ class Orders extends \yii\db\ActiveRecord
 				}		
 			}
 			else $return .= 'Старые товары не переданы. ';
-			//если надо добавить новые позиции и это заказ
-			if(array_key_exists('new', $_POST['tovar_list'])) {
-				foreach ($_POST['tovar_list']['new'] as $new) {
-					//данные из остатка
-					$balance = Tovar::findOne($new['id']);					
-					//добавим в расход
-					$newmodel = new TovarRashod;
-					$newmodel->order_id = $this->id;					
-					$newmodel->tovar_id = $balance->id;
-					$newmodel->sklad_id = $new['sklad_id'];//$balance->sklad_id;
-					$newmodel->price = $balance->price;
-					$newmodel->pprice = $balance->pprice;
-					$newmodel->amount = $new['amount'];
-					if ($newmodel->save()) $return .= 'Новый товар '.$balance->name.' сохранен. ';
-					else $return .= 'Новый товар '.$balance->name.' НЕ сохранен. Ошибки: '.print_r($newmodel->firstErrors, true).' ';
-				}
-			}
-			else $return .= 'Новые товары не переданы. ';
+			
 		}
 		//если не заказ, не новый и не в работе - удалим товары
 		else {			
@@ -422,11 +405,28 @@ class Orders extends \yii\db\ActiveRecord
 			if ($numdel > 0) {$return .= 'Удалено старых товаров: '.$numdel.'. ';}
 			else {$return = 'Нет товаров для сохранения. ';}
 		}
+		//если надо добавить новые позиции и это заказ
+		if(array_key_exists('new', $_POST['tovar_list'])) {
+			foreach ($_POST['tovar_list']['new'] as $new) {				
+				$balance = Tovar::findOne($new['id']);					
+				//добавим в расход
+				$newmodel = new TovarRashod;
+				$newmodel->order_id = $this->id;					
+				$newmodel->tovar_id = $balance->id;
+				$newmodel->sklad_id = $new['sklad_id'];//$balance->sklad_id;
+				$newmodel->price = $balance->price;
+				$newmodel->pprice = $balance->pprice;
+				$newmodel->amount = $new['amount'];
+				if ($newmodel->save()) $return .= 'Новый товар '.$balance->name.' сохранен. ';
+				else $return .= 'Новый товар '.$balance->name.' НЕ сохранен. Ошибки: '.print_r($newmodel->firstErrors, true).' ';
+			}
+		}
+		else $return .= 'Новые товары не переданы. ';
 		return $return;
 	}
-	
+	/*
 	public function getCall(){
-		$url = 'http://api.comagic.ru/api/login/?login=lena.rop.lrf@mail.ru&password=xzyWkD5R';
+		$url = 'http://api.comagic.ru/api/login/?login=lena.rop.lrf@mail.ru&password=russoturisto26';
 		
 		$list=array();
 		$ch = curl_init();
@@ -444,7 +444,7 @@ class Orders extends \yii\db\ActiveRecord
 		else 
 			return false;
 	}
-
+*/
 	public function beforeSave($insert)
 	{
 	    if (parent::beforeSave($insert)) {
@@ -476,7 +476,15 @@ class Orders extends \yii\db\ActiveRecord
 	    //\yii\helpers\VarDumper::dump($this,10,true);
 	    //die;
         //echo "</pre>";die;*/
-               
+        if($insert) {        	
+			$sms = new Sms();
+	    	$msg = $sms->sendSms($this, 'raw');
+	    	//else error on console
+	    	if(isset(Yii::$app->session)){
+				if($msg !==false) Yii::$app->session->addFlash('success', $msg);
+	    		else Yii::$app->session->addFlash('error', 'Смс не сохранена');	
+			}	
+		}            
         if(($changedAttributes['status'] == '1' or $changedAttributes['status'] == '4') and $this->status == '6') {	  
 	    	$sms = new Sms();
 	    	$msg = $sms->sendSms($this, 'accept');
@@ -489,20 +497,29 @@ class Orders extends \yii\db\ActiveRecord
 	    	$msg = $sms->sendSms($this, 'shipped');	    
 	    	if($msg !==false) Yii::$app->session->addFlash('success', $msg);
 	    	else Yii::$app->session->addFlash('error', 'Смс не сохранена');
-	    	//	\yii\helpers\VarDumper::dump($rashod->tovar_id,10,true);die;;
+	    	
 	    	//ostatok
 	        foreach($this->rashod as $rashod) {	
 		    	$msg = TovarBalance::calc($rashod->tovar_id, $rashod->sklad_id, $rashod->amount, $this->shop_id, '-');
 		    	Yii::$app->session->addFlash('info', $msg);	    	
 		    }
-		}
-		/*
+		}		
 		if($changedAttributes['dostavlen'] == '0' and $this->dostavlen == '1' and $this->status == '6') {	  
 	    	$sms = new Sms();
 	    	$msg = $sms->sendSms($this, 'delivered');	    
 	    	if($msg !==false) Yii::$app->session->addFlash('success', $msg);
 	    	else Yii::$app->session->addFlash('error', 'Смс не сохранена');
 		}
-		*/
+		if(strlen(trim($changedAttributes['identif'])) == 0 and strlen($this->identif) >5 and $this->status == '6') {
+			if($this->sender->code == 'russianpost') {
+				$li = new LiveInform();
+				$li->phone = $this->client->phone;
+				$li->order_id = $this->id;
+				$li->tracking = $this->identif;
+		    	$msg = $li->add();
+		    	if(array_key_exists('success',$msg)) Yii::$app->session->addFlash('success', $msg['success']);
+		    	else Yii::$app->session->addFlash('error', $msg['error']);
+			}			
+		}
 	}
 }

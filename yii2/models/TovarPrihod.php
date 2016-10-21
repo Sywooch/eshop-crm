@@ -61,11 +61,11 @@ class TovarPrihod extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'created_at' => 'Дата',
+            'created_at' => 'Дата создания',
             'updated_at' => 'Изменен',
             'created_by' => 'Кто создал',
             'updated_by' => 'Кто изменил',
-            'date_at' => 'Дата',
+            'date_at' => 'Дата прихода',
             'tovar_id' => 'Товар',            
             'price' => 'Цена закупа 1 шт',
             'price_sale' => 'Цена продажи 1 шт',

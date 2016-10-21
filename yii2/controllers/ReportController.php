@@ -131,12 +131,16 @@ class ReportController extends BaseController
                 
         $mdlDate = new ReportHostsDate();
         
+        $categories = \app\models\Category::find()->select(['name', 'id'])->where(['shop_id'=>$this->shop_id])->indexBy('id')->column();
+        
         if ($mdlDate->load(Yii::$app->request->post()) && $mdlDate->validate()) {	
 			$date1 = ($mdlDate->date1);
 			$date2 = ($mdlDate->date2);
 			$date = date('Y-m-d', strtotime($date1.' - 1 days'));
 		//\yii\helpers\VarDumper::dump($date2,10,true);die;
 			$db = Yii::$app->db;
+			
+			$cat_id = $mdlDate->cat_id;
 			
 			$where_shop = 'and orders.shop_id = '.Yii::$app->params['user.current_shop'];
 			
@@ -231,7 +235,7 @@ class ReportController extends BaseController
 			$errors = $mdlDate->errors;
 		}
         //\yii\helpers\VarDumper::dump($mdlDate,10,true);
-        return $this->render('orders',['model'=>$mdlDate, 'results'=>$result, 'errors'=>$errors]);
+        return $this->render('orders',['model'=>$mdlDate, 'categories' => $categories, 'results'=>$result, 'errors'=>$errors]);
 	}
 	
 	public function actionManagers() {

@@ -1,5 +1,6 @@
 <?php
-ini_set('display_errors',1);
+//ini_set('display_errors','On');
+//error_reporting('E_ALL');
 // comment out the following two lines when deployed to production
 defined('YII_DEBUG') or define('YII_DEBUG', true);
 defined('YII_ENV') or define('YII_ENV', 'dev');
@@ -7,6 +8,9 @@ defined('YII_ENV') or define('YII_ENV', 'dev');
 require(__DIR__ . '/yii2/vendor/autoload.php');
 require(__DIR__ . '/yii2/vendor/yiisoft/yii2/Yii.php');
 
-$config = require(__DIR__ . '/yii2/config/web.php');
+$config = yii\helpers\ArrayHelper::merge(
+	require(__DIR__ . '/yii2/config/web.php'),
+	require(__DIR__ . '/yii2/config/web-local.php')
+);
 
 (new yii\web\Application($config))->run();

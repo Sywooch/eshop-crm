@@ -1,13 +1,7 @@
-#AddHandler php56-script .php
-#Action php54-script /cgi-bin/php56.cgi
-#php_flag display_errors off 
-#php_flag display_startup_errors off
-#php_value display_errors 1
 #php_value memory_limit 1024M
 php_value short_open_tag 1
-#2039
-php_value error_reporting 1 
-php_value max_execution_time 60
+#php_value error_reporting 1
+php_value max_execution_time 180
 Options +FollowSymLinks
 IndexIgnore */*
 RewriteEngine on

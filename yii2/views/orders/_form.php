@@ -192,7 +192,7 @@ $this->registerJsFile(\Yii::$app->request->baseUrl.'/lib/inventory.js', ['depend
 						<script>
 						 $("#find_addr").suggestions({
 						  serviceUrl: "https://dadata.ru/api/v2",
-						  token: "",
+						  token: "<?php echo Yii::$app->params['dadata.token']?>",
 						  type: "ADDRESS",
 						  onSelect: showSelected
 						});
@@ -454,7 +454,72 @@ $this->registerJsFile(\Yii::$app->request->baseUrl.'/lib/inventory.js', ['depend
 				</div>
 			</div>
 		</div>
+		
+		<div class="panel panel-default">
+    		<div class="panel-heading" role="tab" id="head-call-block">
+      			<h4 class="panel-title">
+        			<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#call-block" aria-expanded="false" aria-controls="call-block">Звонки <?=(count($call) >0 ) ? '['.count($call).']' : '' ?></a>
+        		</h4>
+        	</div>
+    
+	 		<div id="call-block" class="panel-collapse collapse" role="tabpanel" aria-labelledby="head-call-block">
+		 		<div class="panel-body">
+		 		<? //\yii\helpers\VarDumper::dump($call,true,10); ?>
+				<div class="row">
+					<div class="col-md-12">
+					<? Pjax::begin(['enablePushState' => false]); ?>
+		 			<?= GridView::widget([		 				
+				        'dataProvider' => new \yii\data\ArrayDataProvider(['allModels' => $call]),
+				        //'filterModel' => $searchModel,
+				        'columns' => [
+				            ['class' => 'yii\grid\SerialColumn'],
+
+				            [
+				            	'attribute' => 'call_date',
+				            	'label' => 'Дата звонка',
+				            	'format' => 'datetime',
+				            ],
+				            [
+				            	'attribute' => 'duration',
+				            	'label' => 'Длительность',
+				            	//'format' => 'time',
+				            ],
+				            [
+				            	'attribute' => 'status',
+				            	'label' => 'Статус',
+				            ],
+				            [
+				            	'attribute' => 'direction',
+				            	'label' => 'Направление',
+				            ],
+				            [
+				            	'attribute' => 'operator_name',
+				            	'label' => 'Оператор',
+				            ],
+				            [
+				            	'attribute' => 'file_link',
+				            	'format' => 'raw',
+				            	'label' => 'Запись',
+				            	'value' => function($model) {
+				            		$f = $model['file_link'];
+				            		//return print_r($model['file_link'], true);
+				            		if(!empty($f)) {
+										return '<audio src="'.$f[0].'" controls></audio>';
+									}
+				            		//else return '-';
+				            	},
+				            ]
+				        ],
+				    ]); ?>
+				    <? Pjax::end(); ?>
+					    
+					</div>
+				</div>
 	
+				</div>
+			</div>
+		</div>
+		
 		<div class="panel panel-default">
     		<div class="panel-heading" role="tab" id="head-utm-block">
       			<h4 class="panel-title">

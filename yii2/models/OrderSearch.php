@@ -7,7 +7,6 @@ use yii\data\ActiveDataProvider;
 use app\models\UtmLabel;
 use app\models\Orders;
 use DateTime, DateInterval;
-
 /**
  * OrderSearch represents the model behind the search form about `app\models\Order`.
  */

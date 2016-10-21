@@ -1,5 +1,4 @@
-<?php
-//print_r(__DIR__);die;
+<?php 
 $params = array_merge(
     require(__DIR__ . '/params.php'),
     require(__DIR__ . '/params-local.php')
@@ -8,10 +7,9 @@ $db = array_merge(
 	require(__DIR__ . '/db.php'),
 	require(__DIR__ . '/db-local.php')
 );
-
 $config = [
-	'id' => 'eshop-crm',
-	'name' => 'ESHOP-CRM',
+	'id' => 'lrf-crm2',
+	'name' => 'LRF CRM',
 	'basePath' => dirname(__DIR__),
 	'bootstrap' => ['log','admin'],
 	'language' => 'ru-RU',
@@ -19,7 +17,7 @@ $config = [
 	'components' => [
 		'request' => [
 			// !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
-			'cookieValidationKey' => 'vPiR42tchDpUQsTJwXs-TumuliBJyFHQ',
+			'cookieValidationKey' => 'vPiR42tchDpXQsTJwXs-TumuliBJyFHQ',
 		],
 		/*'cache' => [
 		'class' => 'yii\caching\FileCache',
@@ -102,7 +100,7 @@ $config = [
 			'exchange/*',		
 		],
 	],
-	'params' => $params,
+	'params' => $params,	
 ];
 
 if(YII_ENV_DEV)

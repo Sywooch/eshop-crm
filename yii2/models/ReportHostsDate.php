@@ -10,6 +10,7 @@ class ReportHostsDate extends Model
     public $date2;
     public $rowTotal;
     public $host;
+    public $cat_id;
 
     public function rules()
     {
@@ -19,7 +20,8 @@ class ReportHostsDate extends Model
             [['date1', 'date2'], 'default', 'value' => date('Y-m-d')], 
             ['rowTotal', 'boolean'],        
             ['host', 'trim'],
-            ['host', 'string']
+            ['host', 'string'],
+            ['cat_id', 'integer']
         ];
     }
     public function attributeLabels()
@@ -29,6 +31,7 @@ class ReportHostsDate extends Model
             'date2' => 'Дата до',
             'rowTotal' => 'Общий итог',
             'host' => 'Сайт',
+            'cat_id' => 'Категория'
         ];
     }
 }

@@ -61,6 +61,7 @@ $this->params['breadcrumbs'][] = $this->title;
 	                ]
 	            )
 	    	],
+	    	'updated_by',
 	    	[
 	    		'attribute' => 'tovar_id',
             	'value' => 'tovar_id',

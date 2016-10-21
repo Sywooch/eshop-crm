@@ -22,6 +22,7 @@ use yii\widgets\Pjax;
 $this->registerJsFile(\Yii::$app->request->baseUrl.'/lib/fancybox/jquery.fancybox.pack.js?v=2.1.5', ['depends' => 'yii\web\JqueryAsset']);
 $this->registerCssFile(\Yii::$app->request->baseUrl.'/lib/fancybox/jquery.fancybox.css?v=2.1.5', ['media' => 'screen']);
 $this->registerJsFile(\Yii::$app->request->baseUrl.'/lib/invent.js', ['depends' => 'yii\web\JqueryAsset']);
+\yii\helpers\VarDumper::dump($call,10,true);die;
 ?>
 <style>
 #accordion .panel-heading { padding: 0;}

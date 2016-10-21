@@ -7,9 +7,9 @@ return [
     'supportEmail' => 'admin@example.com',
     'user.passwordResetTokenExpire' => 3600, 
     'user.current_shop' => 0,
-    'salt' => 'eshop-crm%salt',
-    'liveinform.api_id' => '',
-    'access.ip4' => '',
-    'sms.api_id' => '',
+    'salt' => 'lrf%salt',
+    'liveinform.api_id' => 'kaBhKAHN-NjJOgECb-9Su54l42-bgkeNbN1',
+    'access.ip4' => '145.255.9.146',
+    'sms.api_id' => '470c1f43-9745-b1f4-75be-8ceaaf51594e',
     'dadata.token' => '062315354b4b0e3b32049022c7ac5a498eef532f',
 ];

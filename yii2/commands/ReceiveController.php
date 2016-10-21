@@ -238,7 +238,8 @@ class ReceiveController extends Controller
 		}//foreach
 		
 		if(!empty($logs))
-		$fp = fopen('/home/l/linerfmail/erp/public_html/receive-'.date('Y-m-d').'.txt', 'a'); fwrite($fp, print_r($logs,true)); fclose($fp);
+		$fp = fopen('/home/l/linerfmail/erp/public_html/receive-'.date('Y-m-d').'.txt', 'a');
+		fwrite($fp, print_r($logs,true)); fclose($fp);
 		
 		return print_r($logs,true);
 		}//if count rows

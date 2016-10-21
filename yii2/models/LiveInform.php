@@ -125,20 +125,16 @@ class Sms extends \yii\db\ActiveRecord
     	if(!empty($model->identif)) $code = '. Трек номер '.$model->identif;
     	else $code = '';
     	
-    	$tel = '. Техподдержка 8(495)104-38-48'; 
+    	$tel = '. Техподдержка 8(987)2582225'; 
     		
-    	if($event == 'raw') {
-    		if(count($model->rashod) >0)
-    			$msg = "Ваш товар по заказу №{$id} {$summa}зарезервирован{$tel}";
-    		else
-				$msg = "Ваша заявка №{$id} принята, ожидайте звонка{$tel}";
-		}    		
+    	if($event == 'raw') 
+    		$msg = "Ваш товар к заказу №{$id} {$summa}зарезервирован{$tel}";
     	elseif ($event == 'accept')     		
-			$msg = "Ваш заказ №{$id} {$summa}передан в отдел упаковки{$tel}";
+			$msg = "Ваш заказ №{$id} {$summa}передан в службу доставки{$tel}";
 		elseif ($event == 'shipped')
-			$msg = "Ваш заказ №{$id} {$summa}передан службе доставки{$code}{$tel}. Пожалуйста, обратите внимание: в случае невыкупа заказа с Вас будут взысканы расходы на доставку и судебные издержки на основании п.4 ст. 497 ГК РФ";
+			$msg = "Ваш заказ №{$id} {$summa}отправлен{$code}{$tel}. Пожалуйста, обратите внимание: в случае невыкупа заказа с Вас будут взысканы расходы на доставку и судебные издержки на основании п.4 ст. 497 ГК РФ";
 		elseif ($event == 'delivered' or $event == 'delivered3day')			
-			$msg = "Ваш заказ №{$id} {$summa}доставлен{$code}{$tel}";
+			$msg = "Ваш заказ №{$id} {$summa}доставлен{$code}{$tel}. В случае невыкупа заказа с Вас в судебном порядке будут взысканы расходы на доставку и судебные издержки на основании п.4 ст. 497 ГК РФ";
 		else return $return;    	
     	
     	$to = $model->client->phone;
@@ -154,18 +150,14 @@ class Sms extends \yii\db\ActiveRecord
 		$this->msg = $msg;
 		$this->event = $event;
 		$this->phone = $to;
-		$this->shop_id = $model->shop_id;
 		//$this->msg = $msg;
 		
 		if ($this->save()) {
 			$return = 'СМС на событие "'.$this->itemAlias('event',$event).'" отправлена с кодом '.$this->status.'. ';
 		}
-		else {
-			//$return = $this->firstErrors;
-			$fp = fopen('0sms-error-'.date('Y-m-d').'.txt', 'a');
-			fwrite($fp, print_r($this->firstErrors,true));
-			fclose($fp);
-		}
+		/*else {
+			$return = $this->firstErrors;
+		}*/
 		return $return;
 
 	}

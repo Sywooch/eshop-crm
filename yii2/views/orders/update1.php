@@ -16,6 +16,7 @@ $this->params['breadcrumbs'][] = 'Изменить';
 
     <?= $this->render('_form1', [
         'model' => $model,
+        'call' =>$call,
         'mdlTovar' => $mdlTovar,
         'prvTovar' => $prvTovar,
     ]) ?>
