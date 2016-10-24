@@ -363,12 +363,12 @@ class Orders extends \yii\db\ActiveRecord
 */
 	public function saveTovar() {
 		$return = '';
-		$oldarray = $old = $newarray = $new = array();
+		$oldarray = $old = $newarray = $new = $need_del = $need_add = array();
 		//\yii\helpers\VarDumper::dump($_REQUEST,5,true);die;
 		$oldarray = TovarRashod::find()->where(['order_id'=>$this->id])->indexBy('id')->asArray()->all();
 		if (isset($_POST['tovar_list'])) 
 			$newarray = $_POST['tovar_list'];
-		//$newarray = array_merge($oldpost, $newarray);
+		
 		//приведем массивы к единому виду
 		foreach($oldarray as $item){
 			if(array_key_exists($item['tovar_id'].'_'.$item['sklad_id'], $old)) {
@@ -385,69 +385,57 @@ class Orders extends \yii\db\ActiveRecord
 			else {
 				$new[$item['tovar_id'].'_'.$item['sklad_id']] = $item;
 			}
-		}
-		\yii\helpers\VarDumper::dump($old,5,true);
-		\yii\helpers\VarDumper::dump($new,5,true);die;
+		}		
+		$need_del = array_diff_key($old, $new);
+		$need_add = array_diff_key($new, $old);
 		
-			
-		if (isset($_POST['tovar_list']) and count($_POST['tovar_list']) > 0){// and ($this->status == '6' or $this->status == '1' or $this->status == '4')) {
-			//если в заказе уже были позиции прайса
-			if (array_key_exists('old',$_POST['tovar_list'])) {
-				foreach ($_POST['tovar_list']['old'] as $id => $old) {
-					if (($oldmodel = TovarRashod::findOne($id)) !== null) {	
-						$oldmodel->tovar_id = $oldmodel->tovar_id;//$old['tovar_id'];
-						$oldmodel->amount = $old['amount'];
-						if ($oldmodel->save()) $return .= 'Товар '.$oldmodel->tovar->name.' обновлен. ';
-						else $return .= 'Товар '.$oldmodel->tovar->name.' НЕ обновлен. '.print_r($oldmodel->firstErrors, true);
-					}
-					else $return .= 'Не найдена позиция прайса ID='.$id.'. ';
+		if((count($old) == count($new)) and count($need_add) <1)
+			$need_add = $new;
+		/*
+		\yii\helpers\VarDumper::dump($oldarray,5,true);
+		\yii\helpers\VarDumper::dump($newarray,5,true);
+		\yii\helpers\VarDumper::dump($need_del, 5, true);
+		\yii\helpers\VarDumper::dump($need_add, 5, true);
+		die;
+		*/
+		foreach ($need_add as $add) {
+			if (array_key_exists('rashod_id', $add)) {			
+				if (($tr_id = TovarRashod::findOne(['id' => $add['rashod_id'], 'order_id' => $this->id])) !== null) {	
+				//\yii\helpers\VarDumper::dump($tr_id,5,true);die;
+					$tr_id->amount = $add['amount'];
+					if ($tr_id->save()) $return .= 'Товар '.$tr_id->tovar->name.' обновлен. ';
+					else $return .= 'Товар '.$tr_id->tovar->name.' НЕ обновлен. '.print_r($tr_id->firstErrors, true);
 				}
-				//сравним то что передано с тем что в базе, лишнее удалим
-				$oldarray = TovarRashod::find()->where(['order_id'=>$this->id])->indexBy('id')->asArray()->all();
-				
-				$olddel = array_diff_key($oldarray, $_POST['tovar_list']['old']);
-				
-				if (!empty($olddel)) {
-					$iddel = '';
-					$numdel =0;
-					foreach ($olddel as $id=>$v) {
-						/*if (empty($iddel)) $iddel .= $id;
-						else $iddel .= ','.$id;*/
-						$iddel[]=$id;
-					}
-					//\yii\helpers\VarDumper::dump($iddel,5,true);die;
-					//$numdel = TovarRashod::deleteAll('id IN (:id)', [':id'=>$iddel]);
-					//$numdel = TovarRashod::deleteAll(['id'=>':id', 'order_id'=>':oid'], [':id'=>$iddel, ':oid'=>$this->id]);
-					$numdel = TovarRashod::deleteAll(['id'=>$iddel, 'order_id'=>$this->id]);
-					$return .= 'Удалено старых товаров: '.$numdel.'. ';
-				}		
+				else $return .= 'Не найден расход ID='.$id.'. ';
 			}
-			else $return .= 'Старые товары не переданы. ';
-			
-		}
-		//если не заказ, не новый и не в работе - удалим товары
-		else {			
-			$numdel = TovarRashod::deleteAll('order_id = :order_id', [':order_id'=>$this->id]);
-			if ($numdel > 0) {$return .= 'Удалено старых товаров: '.$numdel.'. ';}
-			else {$return = 'Нет товаров для сохранения. ';}
-		}
-		//если надо добавить новые позиции и это заказ
-		if(array_key_exists('new', $_POST['tovar_list'])) {
-			foreach ($_POST['tovar_list']['new'] as $new) {				
-				$balance = Tovar::findOne($new['id']);					
+			else {
+				$tovar = Tovar::findOne([$add['tovar_id'], ]);					
 				//добавим в расход
 				$newmodel = new TovarRashod;
 				$newmodel->order_id = $this->id;					
-				$newmodel->tovar_id = $balance->id;
-				$newmodel->sklad_id = $new['sklad_id'];//$balance->sklad_id;
-				$newmodel->price = $balance->price;
-				$newmodel->pprice = $balance->pprice;
-				$newmodel->amount = $new['amount'];
-				if ($newmodel->save()) $return .= 'Новый товар '.$balance->name.' сохранен. ';
-				else $return .= 'Новый товар '.$balance->name.' НЕ сохранен. Ошибки: '.print_r($newmodel->firstErrors, true).' ';
+				$newmodel->tovar_id = $tovar->id;
+				$newmodel->sklad_id = $add['sklad_id'];//$balance->sklad_id;
+				$newmodel->price = $tovar->price;
+				$newmodel->pprice = $tovar->pprice;
+				$newmodel->amount = $add['amount'];
+				if ($newmodel->save()) $return .= 'Новый товар '.$tovar->name.' сохранен. ';
+				else $return .= 'Новый товар '.$tovar->name.' НЕ сохранен. Ошибки: '.print_r($newmodel->firstErrors, true).' ';	
 			}
+		
 		}
-		else $return .= 'Новые товары не переданы. ';
+		if (!empty($need_del)) {
+			$iddel = array();
+			$numdel =0;
+			foreach ($need_del as $del) {				
+				if(array_key_exists('created_at', $del))
+					$iddel[]=$del['id'];
+				else
+					$iddel[]=$del['rashod_id'];
+			}
+			$numdel = TovarRashod::deleteAll(['id'=>$iddel, 'order_id'=>$this->id]);
+			$return .= 'Удалено старых товаров: '.$numdel.'. ';
+		}
+
 		return $return;
 	}
 	/*
