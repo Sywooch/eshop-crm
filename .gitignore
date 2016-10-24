@@ -48,3 +48,6 @@ Temporary Items
 /assets/*
 /yii2/runtime/*
 *.clpprj
+/nbproject/private/
+/nbproject/
+/eshop-crm_clcs.csprj
