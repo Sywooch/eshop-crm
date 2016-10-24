@@ -389,16 +389,37 @@ class Orders extends \yii\db\ActiveRecord
 		$need_del = array_diff_key($old, $new);
 		$need_add = array_diff_key($new, $old);
 		
-		if((count($old) == count($new)) and count($need_add) <1)
-			$need_add = $new;
+		if((count($old) == count($new)) and count($need_add) <1) $need_add = $new;
 		/*
-		\yii\helpers\VarDumper::dump($oldarray,5,true);
-		\yii\helpers\VarDumper::dump($newarray,5,true);
+		\yii\helpers\VarDumper::dump($old,5,true);
+		\yii\helpers\VarDumper::dump($new,5,true);
 		\yii\helpers\VarDumper::dump($need_del, 5, true);
 		\yii\helpers\VarDumper::dump($need_add, 5, true);
 		die;
 		*/
-		foreach ($need_add as $add) {
+		foreach ($need_add as $add) {					
+			if (($tr_id = TovarRashod::findOne(['tovar_id' => $add['tovar_id'], 'order_id' => $this->id, 'sklad_id' => $add['sklad_id']])) !== null) {	
+			//\yii\helpers\VarDumper::dump($tr_id,5,true);die;
+				$tr_id->amount = $add['amount'];
+				if ($tr_id->save()) $return .= 'Товар '.$tr_id->tovar->name.' обновлен. ';
+				else $return .= 'Товар '.$tr_id->tovar->name.' НЕ обновлен. '.print_r($tr_id->firstErrors, true);
+			}							
+			else {
+				$tovar = Tovar::findOne([$add['tovar_id'], ]);					
+				//добавим в расход
+				$newmodel = new TovarRashod;
+				$newmodel->order_id = $this->id;					
+				$newmodel->tovar_id = $tovar->id;
+				$newmodel->sklad_id = $add['sklad_id'];//$balance->sklad_id;
+				$newmodel->price = $tovar->price;
+				$newmodel->pprice = $tovar->pprice;
+				$newmodel->amount = $add['amount'];
+				if ($newmodel->save()) $return .= 'Новый товар '.$tovar->name.' сохранен. ';
+				else $return .= 'Новый товар '.$tovar->name.' НЕ сохранен. Ошибки: '.print_r($newmodel->firstErrors, true).' ';	
+			}
+		
+		}
+		/*foreach ($need_add as $add) {
 			if (array_key_exists('rashod_id', $add)) {			
 				if (($tr_id = TovarRashod::findOne(['id' => $add['rashod_id'], 'order_id' => $this->id])) !== null) {	
 				//\yii\helpers\VarDumper::dump($tr_id,5,true);die;
@@ -422,7 +443,7 @@ class Orders extends \yii\db\ActiveRecord
 				else $return .= 'Новый товар '.$tovar->name.' НЕ сохранен. Ошибки: '.print_r($newmodel->firstErrors, true).' ';	
 			}
 		
-		}
+		}*/
 		if (!empty($need_del)) {
 			$iddel = array();
 			$numdel =0;
@@ -438,6 +459,7 @@ class Orders extends \yii\db\ActiveRecord
 
 		return $return;
 	}
+	
 	/*
 	public function getCall(){
 		$url = 'http://api.comagic.ru/api/login/?login=lena.rop.lrf@mail.ru&password=russoturisto26';
