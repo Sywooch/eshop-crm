@@ -5,6 +5,7 @@ use yii\bootstrap\ActiveForm;
 $this->title = 'Анализ по хостам';
 ?>
 <h1><?= ($this->title) ?></h1>
+<a href="/statmetrika/" class="btn btn-default">Данные метрики</a>
 <?if(!empty($errors)) {
 	print_r($errors);
 }?>
