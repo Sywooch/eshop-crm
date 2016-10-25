@@ -596,7 +596,7 @@ if (count($rashod_list) > 0) {
 	$n=0;
 	$total_sum = $total_qnt = 0;
 	foreach ($rashod_list as $rashod) {
-		$input_id = time();
+		$input_id += $n;
 ?>
 		<tr class="tovar-row">
 			<td class="num"><?= ++$n ?></td>

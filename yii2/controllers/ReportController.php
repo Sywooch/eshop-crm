@@ -20,6 +20,7 @@ use app\models\ReportRefused;
 use yii\helpers\ArrayHelper;
 use app\modules\user\models\User;
 use yii\data\SqlDataProvider;
+use app\models\Statmetrika;
 use app\components\BaseController;
 
 class ReportController extends BaseController
@@ -54,7 +55,7 @@ class ReportController extends BaseController
 			$date2 = $model->date2;
 			$date = date('Y-m-d', strtotime($date1.' - 1 days'));			
 
-			$ya_list = $this->_get_metrika();			
+			$ya_list = Statmetrika::_get_metrika();			
 			if(array_key_exists('errors', $ya_list)) {				
 				return $this->render('hosts',['model'=>$model, 'results'=>$results, 'errors'=>$ya_list['errors']]);
 				die;
@@ -83,7 +84,7 @@ class ReportController extends BaseController
 					
 					//данные о посещениях
 					$ydate = date('Ymd', strtotime($date));
-					$ya_stat = $this->_get_metrika('http://api-metrika.yandex.ru/stat/traffic/summary.json?id='.$ya['id'].'&pretty=1&date1='.$ydate.'&date2='.$ydate.'&oauth_token='.Settings::getKey('ya_metrika_token'));
+					$ya_stat = Statmetrika::_get_metrika('http://api-metrika.yandex.ru/stat/traffic/summary.json?id='.$ya['id'].'&pretty=1&date1='.$ydate.'&date2='.$ydate.'&oauth_token='.Settings::getKey('ya_metrika_token'));
 					
 					
 					if($res['cnt_all'] < 1 and $ya_stat['totals']['visits'] < 10 and $res['costs'] < 1 and $res['clicks'] < 1)	continue;
@@ -127,7 +128,7 @@ class ReportController extends BaseController
     }
     
     public function actionOrders() {
-		$result = $errors = [];
+	$result = $errors = [];
                 
         $mdlDate = new ReportHostsDate();
         
@@ -1008,38 +1009,5 @@ class ReportController extends BaseController
 		ksort($base);
 		//echo '<pre>';print_r($base);echo '</pre>';
 		return $this->render('tovardo',['model'=>$model, 'results'=>$base]);
-	}
-	
-    /**
-	* получить инфу счетчиков с метрики
-	* 
-	* @url string $url
-	* @return array
-	*/
-	private function _get_metrika($url=false) {		
-		if(!$url)
-			$url = 'https://api-metrika.yandex.ru/management/v1/counters?oauth_token='.Settings::getKey('ya_metrika_token').'&field=labels';
-		
-		$list=array();
-		$ch = curl_init();
-		curl_setopt ($ch, CURLOPT_URL,$url);
-		curl_setopt ($ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.6) Gecko/20070725 Firefox/2.0.0.6");
-		curl_setopt ($ch, CURLOPT_TIMEOUT, 60);
-		curl_setopt ($ch, CURLOPT_FOLLOWLOCATION, 1);
-		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
-		$metrika = curl_exec ($ch);
-		curl_close($ch);
-
-		$return = json_decode($metrika,true);			
-		
-		if($return->counters) {
-			$list = $return->counters;
-			if($return->links) {
-				$list = array_merge($list, _get_metrika($return->links->next));
-			}
-		}
-		else $list = $return;
-		//echo '<pre>';print_r($return);echo '</pre>';die;
-		return ($list);
 	}
 }

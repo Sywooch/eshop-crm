@@ -392,7 +392,7 @@ class Orders extends \yii\db\ActiveRecord
 		if((count($old) == count($new)) and count($need_add) <1) $need_add = $new;
 		/*
 		\yii\helpers\VarDumper::dump($old,5,true);
-		\yii\helpers\VarDumper::dump($new,5,true);
+		\yii\helpers\VarDumper::dump($newarray,5,true);
 		\yii\helpers\VarDumper::dump($need_del, 5, true);
 		\yii\helpers\VarDumper::dump($need_add, 5, true);
 		die;
