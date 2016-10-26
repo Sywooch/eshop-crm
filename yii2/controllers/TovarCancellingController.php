@@ -84,7 +84,7 @@ class TovarCancellingController extends \app\components\BaseController
         	$sklad_list = \app\models\Sklad::find()->select(['name', 'id'])->where(['shop_id'=>$this->shop_id])->indexBy('id')->column();
         	$tovar_list = Tovar::find()->where(['active'=>1])->andWhere(['tovar.shop_id'=>$this->shop_id])->with('category')->asArray()->all();
         	foreach($tovar_list as $tlist) {
-				$list[] = array('cname'=>$tlist['category']['name'], 'id'=>$tlist['id'], 'name'=>$tlist['name'] . ' ['.$tlist['artikul']. ']');
+                    $list[] = array('cname'=>$tlist['category']['name'], 'id'=>$tlist['id'], 'name'=>$tlist['name'] . ' ['.$tlist['artikul']. ']');
 			}
         	//\yii\helpers\VarDumper::dump($tovar_list,20,true);
         	$tovar_list = ArrayHelper::map($list, 'id', 'name', 'cname');//->addSelect('category.name')->select(['`tovar`.`id` as id, CONCAT(`tovar`.`name`, " [", `artikul`, "]") as name'])->addSelect(['`tovar`.`id` as id, CONCAT(`tovar`.`name`, " [", `artikul`, "]") as name'])

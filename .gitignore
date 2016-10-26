@@ -49,3 +49,4 @@ Temporary Items
 /yii2/runtime/*
 *.clpprj
 /nbproject
+*.csprj

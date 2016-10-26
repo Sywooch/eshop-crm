@@ -5,7 +5,7 @@ namespace app\controllers;
 use Yii;
 use app\models\TovarCancelling;
 use yii\data\ActiveDataProvider;
-use yii\web\Controller;
+//use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 
@@ -124,7 +124,7 @@ class TovarCancellingController extends \app\components\BaseController
      */
     protected function findModel($id)
     {
-        if (($model = TovarCancelling::find()->where('id = :id and shop_id = :shop_id')->addParams([':id'=>$id, 'shop_id'=$this->shop_id])->one()) !== null) {
+        if (($model = TovarCancelling::find()->where('id = :id and shop_id = :shop_id')->addParams([':id'=>$id, ':shop_id'=>$this->shop_id])->one()) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
