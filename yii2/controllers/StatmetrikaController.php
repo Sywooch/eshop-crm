@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use Yii;
 use app\models\Statmetrika;
+use app\models\StatmetrikaForm;
 use app\models\StatmetrikaSearch;
 use app\components\BaseController;
 use yii\web\NotFoundHttpException;
@@ -61,9 +62,9 @@ class StatmetrikaController extends BaseController
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
-    /*public function actionCreate()
+    public function actionCreate()
     {
-        $model = new Statmetrika();
+        $model = new StatmetrikaForm();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -72,7 +73,7 @@ class StatmetrikaController extends BaseController
                 'model' => $model,
             ]);
         }
-    }*/
+    }
 
     /**
      * Updates an existing Statmetrika model.

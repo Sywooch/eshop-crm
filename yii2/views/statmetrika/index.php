@@ -7,7 +7,7 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\StatmetrikaSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Statmetrikas';
+$this->title = 'Статистика посещений';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="statmetrika-index">
@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a('Create Statmetrika', ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a('Получить данные', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
@@ -25,19 +25,19 @@ $this->params['breadcrumbs'][] = $this->title;
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
-            'date_at',
-            'created_at',
-            'created_by',
-            'updated_at',
+            'date_at:datetime',
+            //'created_at',
+            //'created_by',
+            //'updated_at',
             // 'updated_by',
-            // 'host',
-            // 'label:ntext',
-            // 'visits',
-            // 'page_views',
-            // 'new_visitors',
-            // 'denial',
-            // 'depth',
-            // 'visit_time:datetime',
+            'host',
+            'label:ntext',
+            'visits',
+            'page_views',
+            'new_visitors',
+            'denial',
+            'depth',
+            'visit_time:time',
 
             ['class' => 'yii\grid\ActionColumn'],
         ],

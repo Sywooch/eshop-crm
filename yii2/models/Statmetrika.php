@@ -38,9 +38,11 @@ class Statmetrika extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['date_at'], 'safe'],
-            [['created_at', 'created_by', 'updated_at', 'updated_by', 'visits', 'page_views', 'new_visitors', 'visit_time'], 'integer'],
+            [['date_at'], 'required'],
+            [['created_at', 'created_by', 'updated_at', 'updated_by'], 'safe'],
+            [['visits', 'page_views', 'new_visitors', 'visit_time'], 'integer'],
             [['label'], 'string'],
+            [['date_at'], 'date'],
             [['denial', 'depth'], 'number'],
             [['host'], 'string', 'max' => 200],
         ];
@@ -53,19 +55,19 @@ class Statmetrika extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'date_at' => 'Date At',
+            'date_at' => 'Дата',
             'created_at' => 'Created At',
             'created_by' => 'Created By',
             'updated_at' => 'Updated At',
             'updated_by' => 'Updated By',
-            'host' => 'Host',
+            'host' => 'Сайт',
             'label' => 'Метки',
             'visits' => 'Визиты',
             'page_views' => 'Просмотры',
             'new_visitors' => 'Новые посетители',
             'denial' => 'Отказы',
-            'depth' => 'Глубина просмотра.',
-            'visit_time' => 'Среднее время в секундах, проведенное на сайте посетителями',
+            'depth' => 'Глубина просмотра',
+            'visit_time' => 'Среднее время, сек',
         ];
     }
     /**
