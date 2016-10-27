@@ -6,8 +6,8 @@ use yii\bootstrap\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model app\models\Statmetrika */
 
-$this->title = 'Create Statmetrika';
-$this->params['breadcrumbs'][] = ['label' => 'Statmetrikas', 'url' => ['index']];
+$this->title = 'Получить данные метрики';
+$this->params['breadcrumbs'][] = ['label' => 'Список данных метрики', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="statmetrika-create">
@@ -19,10 +19,16 @@ $this->params['breadcrumbs'][] = $this->title;
     <?php $form = ActiveForm::begin(['layout' => 'inline', 'fieldConfig'=>['labelOptions'=>['class'=>'']]]) ?>
     
     <?= $form->field($model, 'date1')->widget(\yii\jui\DatePicker::classname(), [
-    	'language' => 'ru',
+        'language' => 'ru',
     	'dateFormat' => 'yyyy-MM-dd',
     	'options'=>['class'=>'form-control']
 	]) ?>  
+        
+    <?= $form->field($model, 'date2')->widget(\yii\jui\DatePicker::classname(), [
+    	'language' => 'ru',
+    	'dateFormat' => 'yyyy-MM-dd',
+    	'options'=>['class'=>'form-control']
+	]) ?> 
 
     <button type="submit" class="btn btn-primary">Получить данные</button>
 

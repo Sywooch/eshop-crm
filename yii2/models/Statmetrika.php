@@ -21,6 +21,7 @@ use Yii;
  * @property string $denial
  * @property string $depth
  * @property integer $visit_time
+ * @property integer $shop_id
  */
 class Statmetrika extends \yii\db\ActiveRecord
 {
@@ -39,7 +40,7 @@ class Statmetrika extends \yii\db\ActiveRecord
     {
         return [
             [['date_at'], 'required'],
-            [['created_at', 'created_by', 'updated_at', 'updated_by'], 'safe'],
+            [['created_at', 'created_by', 'updated_at', 'updated_by', 'shop_id'], 'safe'],
             [['visits', 'page_views', 'new_visitors', 'visit_time'], 'integer'],
             [['label'], 'string'],
             [['date_at'], 'date'],
@@ -68,6 +69,7 @@ class Statmetrika extends \yii\db\ActiveRecord
             'denial' => 'Отказы',
             'depth' => 'Глубина просмотра',
             'visit_time' => 'Среднее время, сек',
+            'shop_id' => 'Shop_id',
         ];
     }
     /**

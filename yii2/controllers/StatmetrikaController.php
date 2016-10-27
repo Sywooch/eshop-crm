@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use Yii;
+use app\models\Settings;
 use app\models\Statmetrika;
 use app\models\StatmetrikaForm;
 use app\models\StatmetrikaSearch;
@@ -64,11 +65,34 @@ class StatmetrikaController extends BaseController
      */
     public function actionCreate()
     {
-        $model = new StatmetrikaForm();
+        $model = new StatmetrikaForm();        
 
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post()) && $model->validate()) {
+            $ya_list = Statmetrika::_get_metrika();
+            if(array_key_exists('errors', $ya_list)) {
+                Yii::$app->session->addFlash('error', $ya_list['errors']);                
+            }
+            else {
+                $date = date('Y-m-d', strtotime($model->date1.' - 1 days'));
+                $ydate = date('Ymd', strtotime($date));
+                while($date < $model->date2){
+                    $date = date('Y-m-d', strtotime($date.' + 1 days'));			
+		
+                    foreach($ya_list['counters'] as $ya) {
+                        //$ya_stat = Statmetrika::_get_metrika('http://api-metrika.yandex.ru/stat/traffic/summary.json?id='.$ya['id'].'&pretty=1&date1='.$ydate.'&date2='.$ydate.'&oauth_token='.Settings::getKey('ya_metrika_token'));
+                        $ya_stat = Statmetrika::_get_metrika('https://api-metrika.yandex.ru/stat/v1/data?ids='.$ya['id'].'&pretty=0&oauth_token='.Settings::getKey('ya_metrika_token').'&metrics=ym:s:visits&preset=traffic');
+                        \yii\helpers\VarDumper::dump($ya_stat,10,true);
+                    }
+                    
+                }
+                die;
+            }
+            
+            return $this->redirect(['index']);
         } else {
+            if(empty($model->date1)) $model->date1 = date('Y-m-01');
+            if(empty($model->date2)) $model->date2 = date('Y-m-d');
+            
             return $this->render('create', [
                 'model' => $model,
             ]);
