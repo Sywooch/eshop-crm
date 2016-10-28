@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
 	
 	<?= $form->field($model, 'status')->dropdownList(['0'=>'Заказы', '1'=>'Все'],['prompt'=>'']) ?>
 	
-	<?= $form->field($model, 'msg')->textArea(['value' => 'Заберите Ваш подарок нож Columbia! http://lrf24.ru Тел: 88002505658']) ?>
+	<?= $form->field($model, 'msg')->textArea(['value' => 'Заберите Ваш подарок нож Columbia! http://lrf24.ru Тел: 88002000748']) ?>
 	
 	<?= $form->field($model, 'count')->input() ?>
 	
