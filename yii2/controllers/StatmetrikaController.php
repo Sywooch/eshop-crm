@@ -69,19 +69,32 @@ class StatmetrikaController extends BaseController
 
         if ($model->load(Yii::$app->request->post()) && $model->validate()) {
             $ya_list = Statmetrika::_get_metrika();
+            
             if(array_key_exists('errors', $ya_list)) {
                 Yii::$app->session->addFlash('error', $ya_list['errors']);                
             }
             else {
                 $date = date('Y-m-d', strtotime($model->date1.' - 1 days'));
                 $ydate = date('Ymd', strtotime($date));
+                
+                $ya_list_s = implode(",",$ya_list['counters']);
+                $ya_list_s = [];
+                foreach($ya_list['counters'] as $yaid) {
+                    $ya_list_s[] = $yaid['id'];
+                }
+                $ya_list_s = implode(",",$ya_list_s);
+                
+                \yii\helpers\VarDumper::dump($ya_list_s,10,true);
                 while($date < $model->date2){
                     $date = date('Y-m-d', strtotime($date.' + 1 days'));			
 		
+                    $ya_stat = Statmetrika::_get_metrika('https://api-metrika.yandex.ru/stat/v1/data?ids='.$ya_list_s.'&pretty=0&oauth_token='.Settings::getKey('ya_metrika_token').'&preset=traffic');                        
+                    \yii\helpers\VarDumper::dump($ya_stat,10,true);
+                    
                     foreach($ya_list['counters'] as $ya) {
                         //$ya_stat = Statmetrika::_get_metrika('http://api-metrika.yandex.ru/stat/traffic/summary.json?id='.$ya['id'].'&pretty=1&date1='.$ydate.'&date2='.$ydate.'&oauth_token='.Settings::getKey('ya_metrika_token'));
-                        $ya_stat = Statmetrika::_get_metrika('https://api-metrika.yandex.ru/stat/v1/data?ids='.$ya['id'].'&pretty=0&oauth_token='.Settings::getKey('ya_metrika_token').'&metrics=ym:s:visits&preset=traffic');
-                        \yii\helpers\VarDumper::dump($ya_stat,10,true);
+                        //$ya_stat = Statmetrika::_get_metrika('https://api-metrika.yandex.ru/stat/v1/data?ids='.$ya['id'].'&pretty=0&oauth_token='.Settings::getKey('ya_metrika_token').'&preset=traffic');                        
+                        //\yii\helpers\VarDumper::dump($ya_stat,10,true);
                     }
                     
                 }
