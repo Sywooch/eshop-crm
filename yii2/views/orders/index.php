@@ -1,11 +1,13 @@
 <?php
 
-use yii\helpers\Html;
 use yii\grid\GridView;
 use yii\jui\DatePicker;
 use app\models\Senders;
 use app\models\OrderSearch;
+use app\modules\user\models\User;
 use yii\helpers\Url;
+use yii\helpers\Html;
+use yii\helpers\ArrayHelper;
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\OrderSearch */
@@ -163,6 +165,19 @@ $this->title = 'Список заявок';
                 ]
             )
     	];
+        elseif($key=='source') $columns[] = [
+            'attribute'=>'source',
+            'value'=> function($model) {
+                    $st=$model->itemAlias('source',$model->source);
+                    return $st;
+            },
+            'filter' => Html::activedropDownList(
+                    $searchModel,
+                    'source',
+                    $searchModel->itemAlias('source'),
+                    ['class' => 'form-control', 'prompt' => '']//'value' => 'OrderSearch[status][]'
+                ),
+        ];
     	elseif($key=='status') $columns[] = [
             	'attribute'=>'status',
             	'value'=> function($model) {
@@ -302,6 +317,19 @@ $this->title = 'Список заявок';
 	                ['class' => 'form-control', 'prompt' => '']
 	            ),
         ];
+                elseif($key=='type_oplata') $columns[] = [
+            	'attribute'=>'type_oplata',
+            	'value'=> function($model) {
+            		$st=$model->itemAlias('type_oplata',$model->type_oplata);
+            		return $st;
+            	},
+            	'filter' => Html::activeDropDownList(
+	                $searchModel,
+	                'type_oplata',
+	                $searchModel->itemAlias('type_oplata'),
+	                ['class' => 'form-control', 'prompt' => '']
+	            ),
+        ];
         elseif($key=='b2c_id') $columns[] = 'b2c_id';
     	elseif($key=='client.fio') $columns[] = ['attribute'=>'client.fio','value'=>'client.fio',];
     	elseif($key=='client.region_id') $columns[] = ['attribute'=>'client.region_id','value'=>'client.region.kname',];
@@ -310,12 +338,20 @@ $this->title = 'Список заявок';
     	elseif($key=='client.settlement_id') $columns[] = ['attribute'=>'client.settlement_id','value'=>'client.settlement.name',];
     	elseif($key=='client.fulladdress') $columns[] = ['attribute'=>'client.fulladdress','value'=>function ($model) {return $model->client->getFulladdress();},];
     	elseif($key=='client.email') $columns[] = ['attribute'=>'client.email','value'=>'client.email',];
-    	elseif($key=='manager_id') $columns[] = ['attribute'=>'manager_id', 'value'=>'manager.fullname',];    	
+    	elseif($key=='manager_id') $columns[] = [
+            'attribute'=>'manager_id',
+            'value'=>'manager.fullname',
+            'filter' => Html::activeDropDownList(
+                $searchModel,
+                'manager_id',
+                ArrayHelper::map(User::getUsersByRole('manager'), 'id', 'fullname'),
+                ['class' => 'form-control', 'prompt' => '']
+            ),
+        ];    	
     	elseif($key=='packer_id') $columns[] =  ['attribute'=>'packer_id', 'value'=>'packer.fullname',];
         elseif($key=='old_id') $columns[] = 'old_id';
         elseif($key=='old_id2') $columns[] = 'old_id2';
-        elseif($key=='sklad') $columns[] = 'sklad';
-        elseif($key=='type_oplata') $columns[] = 'type_oplata';
+        elseif($key=='sklad') $columns[] = 'sklad';        
         elseif($key=='ip_address') $columns[] = 'ip_address';
         elseif($key=='url') $columns[] = 'url';
         elseif($key=='note') $columns[] = 'note:ntext';
@@ -325,8 +361,8 @@ $this->title = 'Список заявок';
         elseif($key=='utm_campaign') $columns[] = ['attribute'=>'utmLabel.utm_campaign', 'value'=>'utmLabel.utm_campaign',];
         elseif($key=='utm_source') $columns[] = ['attribute'=>'utmLabel.utm_source', 'value'=>'utmLabel.utm_source',];
         elseif($key=='utm_medium') $columns[] = ['attribute'=>'utmLabel.utm_medium', 'value'=>'utmLabel.utm_medium',];        
-        elseif($key=='source_type') $columns[] = ['attribute'=>'utmLabel.source_type', 'value'=>'utmLabel.source_type',];        
-        elseif($key=='source') $columns[] = ['attribute'=>'utmLabel.source', 'value'=>'utmLabel.source',];
+        elseif($key=='source_type') $columns[] = ['attribute'=>'utmLabel.source_type', 'value'=>'utmLabel.source_type',];       
+        //elseif($key=='source') $columns[] = ['attribute'=>'utmLabel.source', 'value'=>'utmLabel.source',];
         elseif($key=='group_id') $columns[] = ['attribute'=>'utmLabel.group_id', 'value'=>'utmLabel.group_id',];
         elseif($key=='banner_id') $columns[] = ['attribute'=>'utmLabel.banner_id', 'value'=>'utmLabel.banner_id',];
         elseif($key=='position') $columns[] = ['attribute'=>'utmLabel.position', 'value'=>'utmLabel.position',];

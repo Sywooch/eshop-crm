@@ -25,7 +25,7 @@ class OrderSearch extends Orders
     public function rules()
     {
         return [
-            [['id', 'client_id', 'status', 'dostavza', 'manager_id', 'fast', 'packer_id', 'tclient', 'otpravlen', 'dostavlen', 'oplachen', 'vkasse', 'vozvrat', 'send_moskva'], 'integer'],
+            [['id', 'client_id', 'status', 'dostavza', 'manager_id', 'fast', 'packer_id', 'tclient', 'otpravlen', 'dostavlen', 'oplachen', 'vkasse', 'vozvrat', 'send_moskva', 'source', 'type_oplata'], 'integer'],
             [['date_at', 'created_at', 'date_order_start', 'date_order_end', 'data_duble',  'prich_double', 'prich_vozvrat', 'identif', 'category_id', 'url', 'note', 'ip_address', 'client.phone', 'client.fio', 'client.flat', 'client.fulladdress', 'utmLabel.utm_content', 'utmLabel.utm_campaign', 'utmLabel.utm_source', 'utmLabel.utm_term', 'utmLabel.source_type', 'utmLabel.utm_medium', 'utmLabel.source', 'utmLabel.group_id', 'utmLabel.banner_id', 'utmLabel.position', 'utmLabel.position_type','utmLabel.region_name','sender_id', 'b2c_id'], 'safe'],
 			[['vozvrat_cost', 'summaotp', 'discount', 'summ', 'totalSumm'], 'number'],           
             //[['date_filter_start', 'date_filter_end'], 'date', 'format' => 'Y-m-d'],
@@ -71,22 +71,23 @@ class OrderSearch extends Orders
 		
         $ret = array_merge($ret, 
             [				
-	        	'client.phone' => 'Тел. клиента',
-	        	'client.fio' => 'ФИО клиента',
-	        	'client.email' => 'Email клиента',
-	        	'client.region_id' => 'Регион клиента',
-	        	'client.area_id' => 'Район клиента',
-	        	'client.city_id' => 'Город клиента',
-	        	'client.settlement_id' => 'Нас.пункт клиента',
-	        	'client.fulladdress' => 'Полный адрес клиента',
-	        	'client.flat' => 'Адрес, улица, кв-ра клиента',
-	        	'date_order_start' => 'Дата заявки от',
-	        	'date_order_end' => 'Дата заявки до',	        	
-	        	'column_visible' => 'Показать колонки'
-	        ]
-		);		
-		//echo '<pre>';print_r($ret);echo '</pre>';die;
-		return $ret;
+                'client.phone' => 'Тел. клиента',
+                'client.fio' => 'ФИО клиента',
+                'client.email' => 'Email клиента',
+                'client.region_id' => 'Регион клиента',
+                'client.area_id' => 'Район клиента',
+                'client.city_id' => 'Город клиента',
+                'client.settlement_id' => 'Нас.пункт клиента',
+                'client.fulladdress' => 'Полный адрес клиента',
+                'client.flat' => 'Адрес, улица, кв-ра клиента',
+                'date_order_start' => 'Дата заявки от',
+                'date_order_end' => 'Дата заявки до',	        	
+                'column_visible' => 'Показать колонки'
+	    ]
+	);		
+	
+        //echo '<pre>';print_r($labels);echo '</pre>';die;
+	return $ret;
 	}
     
 
@@ -103,7 +104,7 @@ class OrderSearch extends Orders
     {                   
         $qTotalSumm = (new \yii\db\Query())->select(['SUM(`tovar_rashod`.`price` * `tovar_rashod`.`amount`) - IFNULL(`orders`.`discount`, 0)'])->from('tovar_rashod')->where('tovar_rashod.order_id = orders.id');
         //$query = Orders::find()->select('orders.*')->addSelect(["(SELECT SUM((`tovar_rashod`.`price` * `tovar_rashod`.`amount`) - IFNULL(`orders`.`discount`, 0)) from tovar_rashod where tovar_rashod.order_id = orders.id) as totalSumm"])->groupBy('id');
-        $query = Orders::find()->select('orders.*')->addSelect(['totalSumm'=>$qTotalSumm])->groupBy('id');
+        $query = Orders::find()->select('orders.*')->addSelect(['totalSumm'=>$qTotalSumm])->groupBy('{{orders}}.id');
         if(is_null($id))
         	//$query->joinWith(['client' => function($query) { $query->from(['client' => 'client']); }]);
         	$query->joinWith(['client','client.region','manager','packer','utmLabel','sender','rashod']);
@@ -163,6 +164,7 @@ class OrderSearch extends Orders
 
         $query->andFilterWhere([
             'orders.id' => $this->id,
+            'source' => $this->source,
             //'date' => $this->date,
             //'orders.status' => $this->status,           
             'otpravlen' => $this->otpravlen,
@@ -208,7 +210,7 @@ class OrderSearch extends Orders
             ->andFilterWhere(['like', 'identif', $this->identif])
            // ->andFilterWhere(['like', 'category', $this->category])
             ->andFilterWhere(['like', 'url', $this->url])
-            ->andFilterWhere(['like', 'note', $this->note])
+            ->andFilterWhere(['like', '{{orders}}.note', $this->note])
             ->andFilterWhere(['like', 'ip_address', $this->ip_address]);		
 		
 		$query->andFilterWhere(['like', 'client.fio', $this->getAttribute('client.fio')]);
