@@ -1,6 +1,7 @@
 <?php
 /* @var $this yii\web\View */
 use yii\bootstrap\ActiveForm;
+use app\models\Category;
 ?>
 <h1>Анализ по менеджерам</h1>
 <?if(!empty($errors)) {
@@ -20,7 +21,8 @@ use yii\bootstrap\ActiveForm;
     	'dateFormat' => 'yyyy-MM-dd',
     	'options'=>['class'=>'form-control']
 	]) ?>
-    <?= $form->field($model, 'rowTotal')->checkbox() ?>
+    <?= $form->field($model, 'category_id')->dropdownList(Category::find()->select(['name', 'id'])->where(['shop_id'=>Yii::$app->params['user.current_shop']])->indexBy('id')->column())
+	?>
 
     <button type="submit" class="btn btn-primary">Отобрать</button>
 
@@ -28,27 +30,31 @@ use yii\bootstrap\ActiveForm;
 
 <p></p>
 
-<?if(!empty($results)) { ?>
+<?php if(!empty($results)) { ?>
 <table class="table table-bordered table-striped">
 	<thead>
 		<tr>			
 			<th>Менеджер</th>
 			<th>Заявки</th>
-			<th>Заявки чистые <span class="badge" data-toggle="tooltip" data-placement="bottom" title="В работе, обработан, заказ, отказ">?</span></th>						
+			<th>Заявки чистые <span class="badge" data-toggle="tooltip" data-placement="bottom" title="В работе, обработан, заказ, отказ">?</span></th>                        
 			<th>Заказы</th>
-			<th>%</th>			
-			<th>Продано</th>
+			<th>%</th>
+                        <th>Осн. товар</th>
+                        <th>Апселл</th>
+			<th>Продано всего</th>
 			<th>Ср. сумма</th>
 		</tr>
 	</thead>
 	<tbody>
-<?
-$cnt_all = $cnt_za = $cnt_zz = $cnt_sum = $cnt_avg = 0;
+<?php
+$cnt_all = $cnt_za = $cnt_zz = $cnt_osntovar = $cnt_upsell = $cnt_sum = $cnt_avg = 0;
 
 foreach($results as $manager=>$result) {
 	$cnt_all = $cnt_all + $result['cnt_all'];
 	$cnt_za = $cnt_za + $result['cnt_za'];
 	$cnt_zz = $cnt_zz + $result['cnt_zz'];
+        $cnt_osntovar = $cnt_osntovar + $result['osntovar'];
+        $cnt_apsell = $cnt_apsell + $result['upsell'];
 	$cnt_sum = $cnt_sum + $result['summ'];
 	$cnt_avg = $cnt_avg + $result['avg'];
 ?>
@@ -58,6 +64,8 @@ foreach($results as $manager=>$result) {
 		<td><?=$result['cnt_za'] >0 ? $result['cnt_za'] : '';?></td>
 		<td><?=$result['cnt_zz'] >0 ? $result['cnt_zz'] : '';?></td>
 		<td><?=($result['cnt_za'] >0) ? (round($result['cnt_zz']*100 / $result['cnt_za'],2)) : '' ?></td>
+                <td><?=($result['osntovar'] >0) ? round($result['osntovar'],2) : '' ?></td>
+                <td><?=($result['upsell'] >0) ? round($result['upsell'],2) : '' ?></td>
 		<td><?=($result['summ'] >0) ? round($result['summ'],2) : '' ?></td>
 		<td><?=($result['avg'] >0) ? round($result['avg'],2) : '' ?></td>
 	</tr>	
@@ -67,7 +75,9 @@ foreach($results as $manager=>$result) {
 		<th><?=$cnt_all;?></th>
 		<th><?=$cnt_za;?></th>
 		<th><?=$cnt_zz;?></th>		
-		<th><?=round($cnt_zz * 100 / $cnt_za,2)?></th>		
+		<th><?=round($cnt_zz * 100 / $cnt_za,2)?></th>
+                <th><?=$cnt_osntovar;?></th>
+                <th><?=$cnt_apsell;?></th>
 		<th><?=$cnt_sum;?></th>
 		<th><?=round($cnt_sum / $cnt_zz,2);?></th>
 	</tr>
@@ -78,4 +88,4 @@ $(function () {
   $('[data-toggle="tooltip"]').tooltip()
 })
 </script>
-<? } ?>
+<?php } ?>
