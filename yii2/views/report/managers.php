@@ -1,12 +1,10 @@
 <?php
 /* @var $this yii\web\View */
 use yii\bootstrap\ActiveForm;
-use app\models\Category;
+
 ?>
 <h1>Анализ по менеджерам</h1>
-<?if(!empty($errors)) {
-	print_r($errors);
-}?>
+<?php //if(!empty($errors)) {print_r($errors);}?>
 <?php $form = ActiveForm::begin(['layout' => 'inline', 'fieldConfig'=>['labelOptions'=>['class'=>'']]])
 //$form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data', 'class'=>'form-inline']]) ?>
 
@@ -21,9 +19,11 @@ use app\models\Category;
     	'dateFormat' => 'yyyy-MM-dd',
     	'options'=>['class'=>'form-control']
 	]) ?>
-    <?= $form->field($model, 'category_id')->dropdownList(Category::find()->select(['name', 'id'])->where(['shop_id'=>Yii::$app->params['user.current_shop']])->indexBy('id')->column())
-	?>
-
+    
+    <?= $form->field($model, 'category_id')->dropdownList($model->categorylist, array('prompt'=>'')) ?>
+    
+    <?= $form->field($model, 'source')->dropdownList($model->sourcelist, array('prompt'=>'')) ?>
+    
     <button type="submit" class="btn btn-primary">Отобрать</button>
 
 <?php ActiveForm::end() ?>
@@ -69,17 +69,17 @@ foreach($results as $manager=>$result) {
 		<td><?=($result['summ'] >0) ? round($result['summ'],2) : '' ?></td>
 		<td><?=($result['avg'] >0) ? round($result['avg'],2) : '' ?></td>
 	</tr>	
-<? } //foreach?>
+<?php } //foreach?>
 	<tr class='itog'>
 		<th class="text-right">Итого</th>
 		<th><?=$cnt_all;?></th>
 		<th><?=$cnt_za;?></th>
 		<th><?=$cnt_zz;?></th>		
-		<th><?=round($cnt_zz * 100 / $cnt_za,2)?></th>
+		<th><?=($cnt_za >0) ? round($cnt_zz * 100 / $cnt_za, 2) : ''?></th>
                 <th><?=$cnt_osntovar;?></th>
                 <th><?=$cnt_apsell;?></th>
 		<th><?=$cnt_sum;?></th>
-		<th><?=round($cnt_sum / $cnt_zz,2);?></th>
+		<th><?=($cnt_za >0) ? round($cnt_sum / $cnt_zz,2) : '';?></th>
 	</tr>
 	</tbody>
 </table>

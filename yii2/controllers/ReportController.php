@@ -11,6 +11,7 @@ use app\models\ReportDosales;
 use app\models\ReportTovar;
 use app\models\ReportDeliverycost;
 use app\models\ReportSvod;
+use app\models\ReportManagers;
 use app\models\TovarRashod;
 use app\models\TovarPrihod;
 use app\models\TovarBalance;
@@ -238,12 +239,16 @@ class ReportController extends BaseController {
     public function actionManagers() {
         $result = $errors = [];
 
-        $mdlDate = new ReportDosales();
+        $mdlDate = new ReportManagers();
 
         if ($mdlDate->load(Yii::$app->request->post()) && $mdlDate->validate()) {
             $date1 = $mdlDate->date1;
             $date2 = $mdlDate->date2;
             $date = "DATE(`date_at`) BETWEEN '$date1' AND '$date2'";
+            if (empty($mdlDate->source))
+                $source = '';
+            else 
+                $source = 'and orders.source = '.$mdlDate->source;                    
 
             $db = Yii::$app->db;
 
@@ -257,39 +262,40 @@ class ReportController extends BaseController {
                 //\yii\helpers\VarDumper::dump($manager,3,true);
                 //все заявки кроме теста
                 //$orders = Orders::find()->select(['count(*) as cnt_all'])->where(['DATE(`date`)'=>$date])->andWhere(['<>', 'status',8])->one();
-                $orders = $db->createCommand("SELECT count(*) as cnt_all from orders WHERE  $date and status <> '8' and manager_id = '$manager[id]'")->queryOne();
+                $orders = $db->createCommand("SELECT count(*) as cnt_all from orders WHERE $date $source and status <> '8' and manager_id = '$manager[id]'")->queryOne();
                 $res['cnt_all'] = $orders['cnt_all'];
 
                 //чистые заявки
                 //$orders = Orders::find()->select(['count(*) as cnt_dub'])->where(['DATE(`date`)'=>$date])->andWhere(['status'=>2])->one();
-                $orders = $db->createCommand("SELECT count(*) as cnt_za from orders WHERE $date and status IN (1,4,6,7) and manager_id = '$manager[id]'")->queryOne();
+                $orders = $db->createCommand("SELECT count(*) as cnt_za from orders WHERE $date $source and status IN (1,4,6,7) and manager_id = '$manager[id]'")->queryOne();
                 $res['cnt_za'] = $orders['cnt_za'];
 
                 //заказ
                 //$orders = Orders::find()->select(['count(*) as cnt_zz'])->where(['DATE(`date`)'=>$date])->andWhere(['status'=>6])->one();
-                $orders = $db->createCommand("SELECT count(*) as cnt_zz from orders WHERE $date and status = '6' and manager_id = '$manager[id]'")->queryOne();
+                $orders = $db->createCommand("SELECT count(*) as cnt_zz from orders WHERE $date $source and status = '6' and manager_id = '$manager[id]'")->queryOne();
                 $res['cnt_zz'] = $orders['cnt_zz'];
 
                 //продано
-                $orders = $db->createCommand("SELECT SUM(price*amount) as summ from tovar_rashod WHERE order_id IN (SELECT id from orders WHERE $date and status = '6' and manager_id = '$manager[id]')")->queryOne();
+                $orders = $db->createCommand("SELECT SUM(price*amount) as summ from tovar_rashod WHERE order_id IN (SELECT id from orders WHERE $date $source and status = '6' and manager_id = '$manager[id]')")->queryOne();
                 $res['summ'] = $orders['summ'];
                 
                 //продано основного товара
                 $orders = $db->createCommand("SELECT SUM(tr.price * tr.amount) as osntovar from tovar_rashod tr"
                         . " LEFT JOIN tovar t ON t.id = tr.tovar_id"
-                        . " WHERE order_id IN (SELECT id from orders WHERE $date and status = '6' and manager_id = '$manager[id]')"
+                        . " WHERE order_id IN (SELECT id from orders WHERE $date $source and status = '6' and manager_id = '$manager[id]')"
                         . " and t.category_id <> '$mdlDate->category_id'")->queryOne();
                 $res['osntovar'] = $orders['osntovar'];
                 
                 //продано основного товара
                 $orders = $db->createCommand("SELECT SUM(tr.price * tr.amount) as upsell from tovar_rashod tr"
                         . " LEFT JOIN tovar t ON t.id = tr.tovar_id"
-                        . " WHERE order_id IN (SELECT id from orders WHERE $date and status = '6' and manager_id = '$manager[id]')"
+                        . " WHERE order_id IN (SELECT id from orders WHERE $date $source and status = '6' and manager_id = '$manager[id]')"
                         . " and t.category_id = '$mdlDate->category_id'")->queryOne();
                 $res['upsell'] = $orders['upsell'];
 
                 //ср.чек
-                $res['avg'] = $res['summ'] / $res['cnt_zz'];
+                if ($res['cnt_zz'] >0) $res['avg'] = $res['summ'] / $res['cnt_zz'];
+                else $res['avg'] = 0;
 
                 $result[$manager['fullname']] = $res;
             }
@@ -297,6 +303,8 @@ class ReportController extends BaseController {
             $errors = $mdlDate->errors;
         }
         //\yii\helpers\VarDumper::dump($mdlDate,10,true);
+        if(!empty($errors))
+            \Yii::$app->session->addFlash('error', $errors);
         return $this->render('managers', ['model' => $mdlDate, 'results' => $result, 'errors' => $errors]);
     }
 
