@@ -5,12 +5,12 @@ use Yii;
 use yii\web\Controller;
 use yii\flash\Flash;
 
-$arIP = array_merge(array(\Yii::$app->params['access.ip4']), array('127.0.0.1'));
-if(!in_array(\Yii::$app->request->userIP, $arIP)) die('Not allow');
+if(!empty(\Yii::$app->params['access.ip4'])) {
+	$arIP = array_merge(array(\Yii::$app->params['access.ip4']), array('127.0.0.1'));
+	if(!in_array(\Yii::$app->request->userIP, $arIP)) die('Not allow');	
+}
 
 //if(\Yii::$app->request->userIP != \Yii::$app->params['access.ip4']) die('Not allow');
-
-
 
 class BaseController extends Controller
 {
