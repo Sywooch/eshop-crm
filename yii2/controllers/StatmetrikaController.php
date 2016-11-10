@@ -90,7 +90,10 @@ class StatmetrikaController extends BaseController
                     $date = date('Y-m-d', strtotime($date.' + 1 days'));			
 		
                     $ya_stat = Statmetrika::_get_metrika('https://api-metrika.yandex.ru/stat/v1/data?ids='.$yac['id'].'&pretty=0&oauth_token='.Settings::getKey('ya_metrika_token').'&preset=traffic&group=Day&sort=ym:s:datePeriodDay&date1='.$ydate.'&date2='.$ydate);    
-                    \yii\helpers\VarDumper::dump($ya_stat,10,true);
+                    
+                    if($ya_stat['total_rows'] > 0) {
+                        $result[$yac['site']] = $ya_stat['data'];
+                    }
                     
                     //foreach($ya_list['counters'] as $ya) {
                         //$ya_stat = Statmetrika::_get_metrika('http://api-metrika.yandex.ru/stat/traffic/summary.json?id='.$ya['id'].'&pretty=1&date1='.$ydate.'&date2='.$ydate.'&oauth_token='.Settings::getKey('ya_metrika_token'));
@@ -100,13 +103,14 @@ class StatmetrikaController extends BaseController
                     
                 }
                 }
+                \yii\helpers\VarDumper::dump($result,10,true);
                 //die;
             }
             
             return $this->redirect(['index']);
         } else {
-            if(empty($model->date1)) $model->date1 = date('Y-m-01');
-            if(empty($model->date2)) $model->date2 = date('Y-m-d');
+            if(empty($model->date1)) {$model->date1 = date('Y-m-01');}
+            if(empty($model->date2)) {$model->date2 = date('Y-m-d');}
             
             return $this->render('create', [
                 'model' => $model,
