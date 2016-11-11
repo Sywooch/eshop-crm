@@ -306,7 +306,7 @@ class Orders extends \yii\db\ActiveRecord
                     '3' => 'Живосайт',
                     '4' => 'Обзвон',
             ],
-            'type_oplata' => [
+            'type_oplata' => [                    
                     '1' => 'Наложенный',
                     '2' => 'Предоплата',
                     '3' => 'Наличными',

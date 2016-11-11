@@ -205,7 +205,7 @@ $this->registerJsFile(\Yii::$app->request->baseUrl.'/lib/inventory.js', ['depend
 						function showSelected(suggestion) {
 						  var address = suggestion.data;
 						  var address_full = suggestion.unrestricted_value;
-						  console.log(address_full);
+						  //console.log(address_full);
 						  //console.log(address);
 						  //alert(address.region_kladr_id);
 						  $("#client-postcode").val(address.postal_code);
@@ -330,7 +330,7 @@ $this->registerJsFile(\Yii::$app->request->baseUrl.'/lib/inventory.js', ['depend
 	
 				<div class="row">
 					<div class="col-md-6">
-						<?= $form->field($model, 'type_oplata')->dropdownList($model->itemAlias('type_oplata'));?>
+						<?= $form->field($model, 'type_oplata')->dropdownList($model->itemAlias('type_oplata'), array('prompt'=>''));?>
 						      
 			            <?= $form->field($model, 'oplachen')->checkbox() ?>
 			            
