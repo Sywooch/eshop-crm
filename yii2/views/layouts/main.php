@@ -9,7 +9,7 @@ use yii\bootstrap\NavBar;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
 use app\widgets\Alert;
-use mdm\admin\classes\MenuHelper;
+use mdm\admin\components\MenuHelper;
 
 AppAsset::register($this);
 ?>

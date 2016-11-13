@@ -13,7 +13,7 @@ $config = [
 	'basePath' => dirname(__DIR__),
 	'bootstrap' => ['log','admin'],
 	'language' => 'ru-RU',
-	'timeZone' => 'Asia/Yekaterinburg',//'Europe/Samara',
+	//'timeZone' => 'Asia/Yekaterinburg',//'Europe/Samara',
 	'components' => [
 		'request' => [
 			// !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
@@ -76,6 +76,7 @@ $config = [
 			'timeFormat' => 'H:mm:ss',
 			'datetimeFormat' => 'Y-MM-dd H:mm:ss',
 			'defaultTimeZone' => 'Europe/Moscow',
+			'timeZone' => 'GMT+5',
 		],
 		'sms' => [
 			'class' => 'Zelenin\yii\extensions\Sms',
@@ -83,8 +84,10 @@ $config = [
 		],
 	],	
 	'modules' => [
-		'admin' => [
-			'class' => 'mdm\admin\Module',			
+		'rbac' => [
+			'class' => 'mdm\admin\Module',
+			'layout' => 'left-menu',
+			'mainLayout' => '@app/views/layouts/main.php',
 		],
 		'user' => [
 			'class' => 'app\modules\user\Module',
@@ -92,7 +95,7 @@ $config = [
 
 	],
 	'as AccessBehavior' => [
-		'class' => 'mdm\admin\classes\AccessControl',		
+		'class' => 'mdm\admin\components\AccessControl',		
 		'allowActions' => [
 			'site/index',
 			'site/error',
