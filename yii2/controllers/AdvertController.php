@@ -234,28 +234,28 @@ class AdvertController extends \app\components\BaseController
             $mdlUpload->statFile = UploadedFile::getInstance($mdlUpload, 'statFile');
             
             if ($mdlUpload->upload()) {        
-                
+                //\yii\helpers\VarDumper::dump($mdlUpload,7,true);
 				$xls = $mdlUpload->statFile->tempName;	       		        
 				$objPHPExcel = \PHPExcel_IOFactory::load($xls);		
 				$sheetData = $objPHPExcel->getActiveSheet()->toArray(null,true,true,true);				
 				
-				$n=0;
+				$n = $ns = 0;
 				foreach($sheetData as $row) {		//\yii\helpers\VarDumper::dump($row,7,true);							
 					//$host = $name = $date = $id_company = false;
 					$data = [];
 					
-					if (is_numeric($row['A']))					
-						$id_company = (int) $row['A'];
+					if (is_numeric($row['B']))					
+						$id_company = (int) $row['B'];
 					
-					if (is_string($row['B']))
-						$name = $row['B'];
+					if (is_string($row['A']))
+						$name = $row['A'];
 					
 					if (date_create_from_format('d.m.Y', $row['C'])) {
 						$date = date_format(date_create_from_format('d.m.Y', $row['C']), 'Y-m-d');						
 					}
 					else {
-						$id_company = '';
-						$name = '';				
+						$id_company = false;
+						$name = false;				
 					}
 
 				/*
@@ -350,11 +350,14 @@ class AdvertController extends \app\components\BaseController
 						    throw $e;
 						}
 						*/
+                                                $ns++;
 					}
 					$n++;
 					//if($n==500) die;//break;
 				}				
-				
+                                if($ns == 0) {$errors[] = 'Нет данных либо данные не загружены';}
+                            if(count($errors) > 0) {\Yii::$app->session->addFlash('error', $errors);}
+                                
 			    $provider = new ArrayDataProvider([
 				    'allModels' => $result,
 				    'pagination' => [
@@ -366,7 +369,7 @@ class AdvertController extends \app\components\BaseController
 				]);
 				$_POST = null;
 				return $this->render('importstat', [
-		    		'errors' => $errors,
+		    		//'errors' => $errors,
 		    		'data' => $result,
 		    		'provider' => $provider,
 		    		'model'=>$mdlUpload

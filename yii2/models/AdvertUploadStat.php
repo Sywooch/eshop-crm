@@ -1,4 +1,4 @@
-<?
+<?php
 namespace app\models;
 
 use yii\base\Model;
@@ -35,7 +35,7 @@ class AdvertUploadStat extends Model
     public function upload()
     {
         if ($this->validate()) {
-            $this->statFile->saveAs('uploads/' . $this->statFile->baseName . '.' . $this->statFile->extension);
+            //$this->statFile->saveAs('upload/' . $this->statFile->baseName . '.' . $this->statFile->extension);
              
             return true;
         } else {
