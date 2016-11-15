@@ -76,23 +76,34 @@ class StatmetrikaController extends BaseController
             else {
                 $date = date('Y-m-d', strtotime($model->date1.' - 1 days'));
                 $ydate = date('Ymd', strtotime($date));
+                $result = array();
                 
                 //$ya_list_s = implode(",",$ya_list['counters']);
-                //$ya_list_s = [];
-                //\yii\helpers\VarDumper::dump($ya_list,10,true);die;
-                while($date < $model->date2){
+                //$ya_list_s = [];31199591
+                
+                //$ya_stat = Statmetrika::_get_metrika('https://api-metrika.yandex.ru/stat/v1/data?ids=26555031,31199591&pretty=0&oauth_token='.Settings::getKey('ya_metrika_token').'&preset=traffic&group=day&date1='.$model->date1.'&date2='.$model->date2);
+                //\yii\helpers\VarDumper::dump($ya_stat,10,true);die;
+                //while($date < $model->date2){
                     //$ya_list_s[] = $yaid['id'];
                 
                 //$ya_list_s = implode(",",$ya_list_s);
                 
                     foreach($ya_list['counters'] as $yac) {
                 
-                    $date = date('Y-m-d', strtotime($date.' + 1 days'));			
+                    //$date = date('Y-m-d', strtotime($date.' + 1 days'));			
 		
-                    $ya_stat = Statmetrika::_get_metrika('https://api-metrika.yandex.ru/stat/v1/data?ids='.$yac['id'].'&pretty=0&oauth_token='.Settings::getKey('ya_metrika_token').'&preset=traffic&group=Day&sort=ym:s:datePeriodDay&date1='.$ydate.'&date2='.$ydate);    
+                    //$ya_stat = Statmetrika::_get_metrika('https://api-metrika.yandex.ru/stat/v1/data?ids='.$yac['id'].'&pretty=0&oauth_token='.Settings::getKey('ya_metrika_token').'&preset=traffic&group=Day&sort=ym:s:datePeriodDay&date1='.$ydate.'&date2='.$ydate);    
+                        $url = 'https://api-metrika.yandex.ru/stat/v1/data?ids='.$yac['id'].'&pretty=1&oauth_token='.Settings::getKey('ya_metrika_token').'&preset=traffic&dimensions=ym:s:date&sort=ym:s:date&group=day&date1='.$model->date1.'&date2='.$model->date2;
+                        //echo $url;
+                    $ya_stat = Statmetrika::_get_metrika($url);
                     
+                    //$ya_stat = Statmetrika::_get_metrika('http://api-metrika.yandex.ru/stat/traffic/summary.json?id=' . $yac['id'] . '&pretty=1&date1=' . $model->date1 . '&date2=' . $model->date2 . '&oauth_token=' . Settings::getKey('ya_metrika_token'));
+                      \yii\helpers\VarDumper::dump($ya_stat,10,true); 
                     if($ya_stat['total_rows'] > 0) {
-                        $result[$yac['site']] = $ya_stat['data'];
+                        $current = array();
+                        $current[$yac['site']] = $ya_stat['data'];
+                        $result[] = $current;
+                        \yii\helpers\VarDumper::dump($current,10,true);
                     }
                     
                     //foreach($ya_list['counters'] as $ya) {
@@ -102,9 +113,9 @@ class StatmetrikaController extends BaseController
                     //}
                     
                 }
-                }
-                \yii\helpers\VarDumper::dump($result,10,true);
-                //die;
+                //}// while
+                //\yii\helpers\VarDumper::dump($result,10,true);die;
+                die;
             }
             
             return $this->redirect(['index']);
