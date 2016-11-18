@@ -36,7 +36,8 @@ use yii\bootstrap\ActiveForm;
 		<tr>			
 			<th>Менеджер</th>
 			<th>Заявки</th>
-			<th>Заявки чистые <span class="badge" data-toggle="tooltip" data-placement="bottom" title="В работе, обработан, заказ, отказ">?</span></th>                        
+                        <th>Заявки ТП</th>
+			<th>Заявки чистые <span class="badge" data-toggle="tooltip" data-placement="bottom" title="В работе, обработан, заказ, отказ, консультация">?</span></th>
 			<th>Заказы</th>
 			<th>%</th>
                         <th>Осн. товар</th>
@@ -51,6 +52,7 @@ $cnt_all = $cnt_za = $cnt_zz = $cnt_osntovar = $cnt_upsell = $cnt_sum = $cnt_avg
 
 foreach($results as $manager=>$result) {
 	$cnt_all = $cnt_all + $result['cnt_all'];
+        $cnt_tp = $cnt_tp + $result['cnt_tp'];
 	$cnt_za = $cnt_za + $result['cnt_za'];
 	$cnt_zz = $cnt_zz + $result['cnt_zz'];
         $cnt_osntovar = $cnt_osntovar + $result['osntovar'];
@@ -61,6 +63,7 @@ foreach($results as $manager=>$result) {
 	<tr>
 		<td><?=$manager?></td>			
 		<td><?=$result['cnt_all'] > 0 ? $result['cnt_all'] : '';?></td>
+                <td><?=$result['cnt_tp'] > 0 ? $result['cnt_tp'] : '';?></td>
 		<td><?=$result['cnt_za'] >0 ? $result['cnt_za'] : '';?></td>
 		<td><?=$result['cnt_zz'] >0 ? $result['cnt_zz'] : '';?></td>
 		<td><?=($result['cnt_za'] >0) ? (round($result['cnt_zz']*100 / $result['cnt_za'],2)) : '' ?></td>
@@ -73,6 +76,7 @@ foreach($results as $manager=>$result) {
 	<tr class='itog'>
 		<th class="text-right">Итого</th>
 		<th><?=$cnt_all;?></th>
+                <th><?=$cnt_tp;?></th>
 		<th><?=$cnt_za;?></th>
 		<th><?=$cnt_zz;?></th>		
 		<th><?=($cnt_za >0) ? round($cnt_zz * 100 / $cnt_za, 2) : ''?></th>

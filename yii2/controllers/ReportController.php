@@ -264,10 +264,14 @@ class ReportController extends BaseController {
                 //$orders = Orders::find()->select(['count(*) as cnt_all'])->where(['DATE(`date`)'=>$date])->andWhere(['<>', 'status',8])->one();
                 $orders = $db->createCommand("SELECT count(*) as cnt_all from orders WHERE $date $source and status <> '8' and manager_id = '$manager[id]'")->queryOne();
                 $res['cnt_all'] = $orders['cnt_all'];
+                
+                //заявки с техподдержкой
+                $orders = $db->createCommand("SELECT count(*) as cnt_tp from orders WHERE $date $source and status = '5' and manager_id = '$manager[id]'")->queryOne();
+                $res['cnt_tp'] = $orders['cnt_tp'];
 
                 //чистые заявки
                 //$orders = Orders::find()->select(['count(*) as cnt_dub'])->where(['DATE(`date`)'=>$date])->andWhere(['status'=>2])->one();
-                $orders = $db->createCommand("SELECT count(*) as cnt_za from orders WHERE $date $source and status IN (1,4,6,7) and manager_id = '$manager[id]'")->queryOne();
+                $orders = $db->createCommand("SELECT count(*) as cnt_za from orders WHERE $date $source and status IN (1,4,6,7,9) and manager_id = '$manager[id]'")->queryOne();
                 $res['cnt_za'] = $orders['cnt_za'];
 
                 //заказ
