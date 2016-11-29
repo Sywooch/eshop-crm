@@ -58,14 +58,16 @@ class Alert extends \yii\bootstrap\Widget
         foreach ($flashes as $type => $data) {
             if (isset($this->alertTypes[$type])) {
                 $data = (array) $data;
+                
                 foreach ($data as $i => $message) {
-                    if(is_array($message)) {
+                	if(empty($message) or is_null($message)) continue;
+                    /*if(is_array($message)) {
                         $temp = null;
-                        foreach($message as $mes) {
+                        foreach($message as $ii => $mes) {
                         $temp .= $mes;                                
                         }
                         $message = $temp;
-                    }
+                    }*/
                     /* initialize css class for each alert box */
                     $this->options['class'] = $this->alertTypes[$type] . $appendCss;
 

@@ -314,7 +314,7 @@ class AdvertController extends \app\components\BaseController
 							$temp = Tovar::findOne(['artikul' => $host, 'shop_id' => $shop_id]);
 						if(!is_null($temp)) 
 							$data['tovar_id'] = $temp->id;
-				//\yii\helpers\VarDumper::dump($temp,7,true);		 
+						 
 						$data['shop_id'] = $shop_id;
 						if(!array_key_exists('source', $data)) $data['source'] = $mdlUpload->source;
 						
@@ -336,7 +336,12 @@ class AdvertController extends \app\components\BaseController
 							$result[] = $data;
 						} else {
 						    // проверка не удалась:  $errors - это массив содержащий сообщения об ошибках
-						    $errors[$data['id_company']] = $model->errors;
+						    $err = null;
+						    foreach($model->errors as $e) {//\yii\helpers\VarDumper::dump($e,7,true);
+								$err .= $e['0'];
+							}
+							\Yii::$app->session->addFlash('error', 'Кампания '.$data['id_company'].': '.$err);
+						    //$errors[$data['id_company']] = $model->errors;
 						}
 						/*
 						$transaction = Statcompany::getDb()->beginTransaction();
@@ -355,8 +360,10 @@ class AdvertController extends \app\components\BaseController
 					$n++;
 					//if($n==500) die;//break;
 				}				
-                                if($ns == 0) {$errors[] = 'Нет данных либо данные не загружены';}
-                            if(count($errors) > 0) {\Yii::$app->session->addFlash('error', $errors);}
+                                if($ns == 0) {//$errors[] = 'Нет данных либо данные не загружены';
+                                \Yii::$app->session->addFlash('info', 'Нет данных либо данные не загружены');
+                                }
+                            //if(count($errors) > 0) {\Yii::$app->session->addFlash('error', $errors);}
                                 
 			    $provider = new ArrayDataProvider([
 				    'allModels' => $result,
