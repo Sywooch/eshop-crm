@@ -33,6 +33,23 @@ $this->title = 'Список заявок';
     <?php $columns[] = ['class' => '\yii\grid\SerialColumn'];  
 	foreach ($searchModel->column_visible as $key) {
 		if($key=='id')  $columns[] = 'id';
+		elseif($key=='created_at') $columns[] = [
+            'attribute' => 'created_at',
+            'format' => 'datetime',
+            'filter' => DatePicker::widget(
+                [
+                    'model' => $searchModel,
+                    'attribute' => 'created_at',
+                    'dateFormat' => 'yyyy-MM-dd',
+                    'options' => [
+                        'class' => 'form-control'
+                    ],
+                    'clientOptions' => [
+                        //'dateFormat' => 'yyyy-MM-dd',
+                    ]
+                ]
+            )
+    	];
 		elseif($key=='date_at') $columns[] = [
             'attribute' => 'date_at',
             'format' => 'datetime',

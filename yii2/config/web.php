@@ -15,7 +15,7 @@ $config = [
 	'basePath' => dirname(__DIR__),
 	'bootstrap' => ['log','admin'],
 	'language' => 'ru-RU',
-	'timeZone' => 'Asia/Yekaterinburg',//'Europe/Samara',
+	//'timeZone' => 'Asia/Yekaterinburg',//'Europe/Samara',
 	'components' => [
 		'request' => [
 			// !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
@@ -77,7 +77,7 @@ $config = [
 			'dateFormat' => 'Y-MM-dd',
 			'timeFormat' => 'H:mm:ss',
 			'datetimeFormat' => 'Y-MM-dd H:mm:ss',
-			'defaultTimeZone' => 'Europe/Moscow',
+			//'defaultTimeZone' => 'Europe/Moscow',
 		],
 		'sms' => [
 			'class' => 'Zelenin\yii\extensions\Sms',

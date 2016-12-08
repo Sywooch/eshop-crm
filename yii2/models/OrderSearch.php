@@ -236,16 +236,23 @@ class OrderSearch extends Orders
 		//echo '<pre>';print_r($this);echo '</pre>';
 		if(!empty($this->date_order_start)) {
 			//echo $this->date_order_start;
-			$query->andFilterWhere(['between', 'DATE(orders.date_at)', (\yii::$app->formatter->asDate($this->date_order_start).' 00:00:00'), (yii::$app->formatter->asDate($this->date_order_end).' 23:59:59')]);
+			$query->andFilterWhere(['between', 'DATE(FROM_UNIXTIME(orders.created_at))', (\yii::$app->formatter->asDate($this->date_order_start).' 00:00:00'), (yii::$app->formatter->asDate($this->date_order_end).' 23:59:59')]);
 		}
 		else if(!empty($this->date_at)) {
-			$date1 = \yii::$app->formatter->asDate($this->date_at);//date('Y-m-d', strtotime($this->created_at));
-			$date2 = \yii::$app->formatter->asDate($this->date_at.' + 1 days');//date("Y-m-d", strtotime($this->created_at.' + 1 days'));
-			//echo $date1;			echo $date2;die;
-			
+			$date1 = \yii::$app->formatter->asDate($this->date_at);
+			//date('Y-m-d', strtotime($this->created_at));
+			$date2 = \yii::$app->formatter->asDate($this->date_at.' + 1 days');
+			//$date2 = date("Y-m-d", strtotime($this->created_at.' + 1 days'));
+			//echo $date1;			echo $date2;die;			
 			//Yii::info($date1, 'test'); // NULL
 			$query->andFilterWhere(['>=', 'DATE(orders.date_at)', $date1])
 				  ->andFilterWhere(['<', 'DATE(orders.date_at)', $date2]);		
+		}
+		else if(!empty($this->created_at)) {
+			$date1 = \yii::$app->formatter->asDate($this->created_at);			
+			$date2 = \yii::$app->formatter->asDate($this->created_at.' + 1 days');			
+			$query->andFilterWhere(['>=', 'DATE(FROM_UNIXTIME(orders.created_at))', $date1])
+				  ->andFilterWhere(['<', 'DATE(FROM_UNIXTIME(orders.created_at))', $date2]);		
 		}
 		
         return $dataProvider;
