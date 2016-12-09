@@ -9,7 +9,7 @@ return [
     'user.current_shop' => 0,
     'salt' => '',
     'liveinform.api_id' => '',
-    'access.ip4' => '',
+    'access.ip4' => array('1.1.1.1'),
     'sms.api_id' => '',
     'dadata.token' => '',
 ];

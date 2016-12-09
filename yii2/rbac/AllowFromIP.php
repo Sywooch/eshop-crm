@@ -7,9 +7,9 @@ use yii\rbac\Rule;
 /**
  * Проверяем authorID на соответствие с пользователем, переданным через параметры
  */
-class IPRule extends Rule
+class AllowFromIP extends Rule
 {
-    public $name = 'IPrule';
+    public $name = 'AllowFromIP';
 
     /**
      * @param string|integer $user the user ID.
@@ -19,7 +19,7 @@ class IPRule extends Rule
      */
     public function execute($user, $item, $params)
     {
-        if(empty(\Yii::$app->params['access.ip4'])) {
+     /*   if(empty(\Yii::$app->params['access.ip4'])) {
         	return true;
         }
         
@@ -34,7 +34,7 @@ class IPRule extends Rule
 	            }
         	}	
 		}
-		      
+	*/	      
         return false;
         //if(\Yii::$app->request->userIP == '94.41.61.180' ? true : false;
     }

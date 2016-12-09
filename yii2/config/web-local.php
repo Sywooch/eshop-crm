@@ -11,7 +11,7 @@ $config = [
 	'id' => 'lrf-crm2',
 	'name' => 'LRF CRM',
 	'basePath' => dirname(__DIR__),
-	'bootstrap' => ['log','admin'],
+	'bootstrap' => ['log','admin','geoData'],
 	'language' => 'ru-RU',
 	//'timeZone' => 'Asia/Yekaterinburg',//'Europe/Samara',
 	'components' => [
@@ -75,13 +75,20 @@ $config = [
 			'dateFormat' => 'Y-MM-dd',
 			'timeFormat' => 'H:mm:ss',
 			'datetimeFormat' => 'Y-MM-dd H:mm:ss',
-			'defaultTimeZone' => 'Europe/Moscow',
-			'timeZone' => 'GMT+5',
+			//'defaultTimeZone' => 'Europe/Moscow',
+			//'timeZone' => 'GMT+5',
 		],
 		'sms' => [
 			'class' => 'Zelenin\yii\extensions\Sms',
 			'api_id' => $params['sms.api_id'],
 		],
+		'geoData' => [
+            'class'             => 'app\components\GeoData',         // путь к классу
+            //'addToCookie'       => true,                            // сохранить в куки
+            //'addToSession'      => true,                            // сохранить в сессии
+            //'setTimezoneApp'    => true,                            // установить timezone в formatter (для вывода)
+            //'cookieDuration'    => 2592000                          // время хранения в куки
+        ],
 	],	
 	'modules' => [
 		'rbac' => [
