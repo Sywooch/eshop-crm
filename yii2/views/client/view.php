@@ -56,13 +56,13 @@ $this->params['breadcrumbs'][] = $this->title;
         'columns' => [
         	['class' => '\yii\grid\SerialColumn'],
         	'id',
-        	'date_at' => [
-	            'attribute' => 'date_at',
+        	'created_at' => [
+	            'attribute' => 'created_at',
 	            'format' => 'datetime',
 	            'filter' => DatePicker::widget(
 	                [
 	                    'model' => $searchModel,
-	                    'attribute' => 'date_at',
+	                    'attribute' => 'created_at',
 	                    'dateFormat' => 'yyyy-MM-dd',
 	                    'options' => [
 	                        'class' => 'form-control'
