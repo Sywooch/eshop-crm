@@ -450,6 +450,62 @@ class ReportController extends BaseController {
         }
         return $this->render('tovar', ['model' => $mdl, 'results' => $results, 'errors' => $errors, 'categories' => $categories]);
     }
+    
+    public function actionTovarInOrder() {
+        $result = $errors = [];
+        $category_id = null;
+
+        $mdl = new ReportTovar();
+
+        $categories = \app\models\Category::find()->select(['name', 'id'])->where(['shop_id' => $this->shop_id])->indexBy('id')->column();
+
+        if ($mdl->load(Yii::$app->request->post()) && $mdl->validate()) {
+            $date1 = $mdl->date1;
+            $date2 = $mdl->date2;
+            $date = "DATE(FROM_UNIXTIME(`orders`.`created_at`)) BETWEEN '$date1' AND '$date2'";
+
+            $result = TovarRashod::find()
+                    ->select('tovar.name,tovar_id')			
+                    ->joinWith(['order', 'tovar'])
+                    ->where(['orders.status' => 6])
+                    ->andWhere(['BETWEEN', 'DATE(FROM_UNIXTIME(`orders`.`created_at`))', $date1, $date2])
+                    ->andWhere(['orders.shop_id' => $this->shop_id])
+                    ->andFilterWhere(['tovar.category_id' => $mdl->category_id])
+                    ->groupBy('tovar_id')
+                    ->asArray()
+                    ->all();
+            //\yii\helpers\VarDumper::dump($result,3,true);die; 		
+            foreach ($result as $row) {
+                $results[$row['tovar_id']]['name'] = $row['tovar']['name'];
+                
+                //в заказах
+                $results[$row['tovar_id']]['zz'] = TovarRashod::find()
+                        //->select('tovar_id')			
+                        ->joinWith(['order'])
+                        ->where(['orders.status' => 6])
+                        ->andWhere(['BETWEEN', 'DATE(FROM_UNIXTIME(`orders`.`created_at`))', $date1, $date2])
+                        ->andWhere(['tovar_id' => $row['tovar_id']])
+                        ->andWhere(['orders.shop_id' => $this->shop_id])
+                        //->groupBy('orders.id')
+                        ->asArray()
+                        ->sum('amount');
+                //в отправках
+                $results[$row['tovar_id']]['zot'] = TovarRashod::find()
+                        //->select('tovar_id')			
+                        ->joinWith(['order'])
+                        ->where(['orders.status' => 6])
+                        ->andWhere(['otpravlen' => 1])
+                        ->andWhere(['BETWEEN', 'DATE(orders.data_otprav)', $date1, $date2])
+                        ->andWhere(['tovar_id' => $row['tovar_id']])
+                        ->andWhere(['orders.shop_id' => $this->shop_id])
+                        //->groupBy('orders.id')
+                        ->asArray()
+                        ->sum('amount');
+
+     		}
+        }
+        return $this->render('tovarinorder', ['model' => $mdl, 'results' => $results, 'errors' => $errors, 'categories' => $categories]);
+    }
 
     public function actionTovaradv() {
         $result = $errors = [];
@@ -1026,6 +1082,29 @@ class ReportController extends BaseController {
         ksort($base);
         //echo '<pre>';print_r($base);echo '</pre>';
         return $this->render('tovardo', ['model' => $model, 'results' => $base]);
+    }
+    public function actionBla() {
+    
+        $current_shop = Yii::$app->params['user.current_shop'];
+
+        $results = \app\models\Client::find()
+                ->select('client.fio, client.phone, tovar.artikul')
+                ->joinWith(['orders', 'orders.rashod', 'orders.rashod.tovar'])
+                ->where(['orders.status' => 6])
+                ->andWhere(['orders.shop_id' => $current_shop])
+                ->andWhere(['<>', 'tovar.category_id', 10])
+                ->andWhere(['>', 'tovar.price1', 0])
+                ->asArray()
+                ->all();
+        
+        echo '<table>';
+        foreach($results as $res) {
+			echo '<tr>';
+			echo '<td>'.$res['fio'].'</td><td>'.$res['phone'].'</td><td>'.$res['artikul'].'</td>';
+			echo '</tr>';
+		}
+		echo '</table>';
+        //echo '<pre>';print_r($results);echo '</pre>';
     }
 
 }

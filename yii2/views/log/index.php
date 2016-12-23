@@ -27,7 +27,19 @@ $this->params['breadcrumbs'][] = $this->title;
 
             'id',
             //'level',            
-            'log_time:datetime',
+            //'log_time:datetime',
+            [
+            	'attribute' => 'log_time',
+            	'value' => function ($data) {
+                	//$timeInSeconds = $data['log_time'] / 1000;
+                	//$millisecondsDiff = (int) (($timeInSeconds - (int) $timeInSeconds) * 1000);
+
+                	//return date('Y-m-d H:i:s.', $timeInSeconds) . sprintf('%03d', $millisecondsDiff);
+                	//return Yii::$app->formatter->asDateTime(date('Y-m-d H:i:s', $data['log_time']));
+                	return (date('Y-m-d H:i:s', $data['log_time']));
+                	//return Yii::$app->formatter->asDateTime(Yii::$app->formatter->asTimestamp($data['log_time']));
+            	},
+            ],
             [
 	    		'attribute'=>'category',
 	    		'value'=>'category',
