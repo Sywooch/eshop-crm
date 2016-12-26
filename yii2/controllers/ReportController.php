@@ -1083,28 +1083,42 @@ class ReportController extends BaseController {
         //echo '<pre>';print_r($base);echo '</pre>';
         return $this->render('tovardo', ['model' => $model, 'results' => $base]);
     }
-    public function actionBla() {
-    
-        $current_shop = Yii::$app->params['user.current_shop'];
 
-        $results = \app\models\Client::find()
-                ->select('client.fio, client.phone, tovar.artikul')
-                ->joinWith(['orders', 'orders.rashod', 'orders.rashod.tovar'])
-                ->where(['orders.status' => 6])
-                ->andWhere(['orders.shop_id' => $current_shop])
-                ->andWhere(['<>', 'tovar.category_id', 10])
-                ->andWhere(['>', 'tovar.price1', 0])
-                ->asArray()
-                ->all();
-        
-        echo '<table>';
-        foreach($results as $res) {
-			echo '<tr>';
-			echo '<td>'.$res['fio'].'</td><td>'.$res['phone'].'</td><td>'.$res['artikul'].'</td>';
-			echo '</tr>';
-		}
-		echo '</table>';
-        //echo '<pre>';print_r($results);echo '</pre>';
-    }
+	public function actionClienttovar(){
+	   $results = $errors = [];
+	   $category_id = null;
 
+	   $mdl = new ReportTovar();
+
+	   $categories = \app\models\Category::find()->select(['name', 'id'])->where(['shop_id' => $this->shop_id])->indexBy('id')->column();
+
+	   if($mdl->load(Yii::$app->request->post()) && $mdl->validate())
+	   {
+	   	$date1 = $mdl->date1;
+	   	$date2 = $mdl->date2;
+
+	   	$date = date('Y-m-d', strtotime($date1 . ' - 1 days'));
+
+	   	while($date < $date2)
+	   	{
+	   		$result = [];
+	   		$date = date('Y-m-d', strtotime($date . ' + 1 days'));
+	   		$current_shop = Yii::$app->params['user.current_shop'];
+
+	   		$result = TovarRashod::find()
+	   		->joinWith(['order', 'order.client', 'tovar'])
+	   		->select('tovar_rashod.id, DATE(FROM_UNIXTIME(orders.created_at)) as date, orders.id as order_id, orders.discount, client.fio, client.phone, artikul,tovar_rashod.price, tovar_rashod.amount')	   		
+	   		->where(['orders.status' => 6])
+	   		->andWhere(['orders.shop_id' => $current_shop])
+	   		->andWhere(['DATE(FROM_UNIXTIME(orders.created_at))' => $date])
+	   		->andFilterWhere(['tovar.category_id' => $mdl->category_id])
+	   		//->groupBy(['orders.id'])
+	   		->asArray()
+	   		->all();
+	   		
+	   		$results = array_merge($results,$result);
+	   	}
+	   }
+	   return $this->render('clienttovar', ['model' => $mdl, 'results' => $results, 'errors' => $errors, 'categories' => $categories]);
+  }
 }
